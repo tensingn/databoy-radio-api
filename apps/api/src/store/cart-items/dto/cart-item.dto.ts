@@ -1,7 +1,7 @@
 import { Size } from '../../enums/sizes.enum';
 import { ProductDto } from '../../products/dto/product.dto';
 
-export class CartItem {
+export class CartItemDto {
   id: number;
   product: ProductDto;
   quantity: number;
