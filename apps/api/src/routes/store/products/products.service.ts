@@ -1,10 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
 import { Size } from '../enums/sizes.enum';
+import { Product } from 'apps/api/src/routes/store/products/entities/products.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
-  findAll(): ProductDto[] {
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
+
+  async findAll(): Promise<ProductDto[]> {
+    console.log(await this.productRepository.find());
     return mockProducts;
   }
 
