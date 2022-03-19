@@ -5,7 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
 } from 'typeorm';
-import { Product } from './products.entity';
+import { Product } from './product.entity';
 
 @Entity()
 export class Image {

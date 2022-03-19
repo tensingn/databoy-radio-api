@@ -1,5 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Image } from './images.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Size } from './size.entity';
+import { Image } from './image.entity';
 
 @Entity()
 export class Product {
@@ -24,5 +32,7 @@ export class Product {
   @Column()
   releaseDate: Date;
 
-  sizes: string[];
+  @ManyToMany(() => Size, (size) => size.products)
+  @JoinTable()
+  sizes: Size[];
 }

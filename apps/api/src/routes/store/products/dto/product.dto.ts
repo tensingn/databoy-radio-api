@@ -1,5 +1,5 @@
 export class ProductDto {
-  id: number;
+  productId: number;
   name: string;
   pluralName: string;
   type: string;
