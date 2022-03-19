@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Delete } from '@nestjs/common';
 import { ProductDto } from './dto/product.dto';
+import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -7,7 +8,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(): Promise<ProductDto[]> {
+  findAll(): Promise<Product[]> {
     return this.productsService.findAll();
   }
 
