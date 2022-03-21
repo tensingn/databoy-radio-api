@@ -9,6 +9,7 @@ import {
 import { Size } from './size.entity';
 import { Image } from './image.entity';
 
+// check out nestjs serialization page
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
