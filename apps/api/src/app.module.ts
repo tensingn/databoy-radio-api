@@ -14,6 +14,7 @@ import { CartItemsModule } from './routes/store/cart-items/cart-items.module';
 import { Product } from './routes/store/products/entities/product.entity';
 import { Image } from './routes/store/products/entities/image.entity';
 import { Size } from './routes/store/products/entities/size.entity';
+import { CartItem } from './routes/store/cart-items/entities/cart-item.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { Size } from './routes/store/products/entities/size.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_DB,
-      entities: [Product, Image, Size],
+      entities: [Product, Image, Size, CartItem],
       synchronize: true,
     }),
     ProductsModule,

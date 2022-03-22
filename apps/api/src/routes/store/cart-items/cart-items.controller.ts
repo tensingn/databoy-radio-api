@@ -8,7 +8,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CartItemsService } from './cart-items.service';
-import { CartItemDto } from './dto/cart-item.dto';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
