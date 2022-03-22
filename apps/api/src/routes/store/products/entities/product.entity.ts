@@ -9,7 +9,9 @@ import {
 import { Size } from './size.entity';
 import { Image } from './image.entity';
 
-// check out nestjs serialization page
+// don't need any serialization for this entity because
+// it doesn't contain any sensitive data
+
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
