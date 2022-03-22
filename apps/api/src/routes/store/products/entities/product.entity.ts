@@ -26,7 +26,7 @@ export class Product {
   @Column()
   type: string;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @OneToMany(() => Image, (image) => image.product)

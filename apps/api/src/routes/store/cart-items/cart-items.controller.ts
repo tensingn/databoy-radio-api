@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CartItemsService } from './cart-items.service';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
@@ -26,8 +28,12 @@ export class CartItemsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartItemsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    let cartItem = await this.cartItemsService.findOne(+id);
+    if (!cartItem) {
+      throw new HttpException('Cart Item not found.', HttpStatus.NOT_FOUND);
+    }
+    return cartItem;
   }
 
   @Patch(':id')

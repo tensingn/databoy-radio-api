@@ -1,8 +1,12 @@
-import { Product } from '../../products/entities/product.entity';
-import { Size } from '../../products/entities/size.entity';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateCartItemDto {
-  product: Product;
+  @IsNotEmpty()
+  productId: number;
+
+  @IsNotEmpty()
   quantity: number;
-  size: Size;
+
+  @IsNotEmpty()
+  sizeId: number;
 }
