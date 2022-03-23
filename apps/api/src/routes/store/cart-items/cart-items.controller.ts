@@ -31,7 +31,7 @@ export class CartItemsController {
   async findOne(@Param('id') id: string) {
     let cartItem = await this.cartItemsService.findOne(+id);
     if (!cartItem) {
-      throw new HttpException('Cart Item not found.', HttpStatus.NOT_FOUND);
+      throw new HttpException('Cart item not found.', HttpStatus.NOT_FOUND);
     }
     return cartItem;
   }

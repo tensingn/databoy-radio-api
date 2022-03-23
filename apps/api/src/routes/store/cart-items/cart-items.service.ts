@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { create } from 'domain';
 import { EntityManager } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { Size } from '../products/entities/size.entity';
@@ -59,11 +58,50 @@ export class CartItemsService {
     });
   }
 
-  update(id: number, updateCartItemDto: UpdateCartItemDto) {
-    return `This action updates a #${id} cartItem`;
+  async update(cartItemId: number, updateCartItemDto: UpdateCartItemDto) {
+    // check that cart item exists
+    let cartItem = await this.entityManager.findOne(CartItem, cartItemId, {
+      relations: ['product', 'size'],
+    });
+    if (!cartItem) {
+      throw new HttpException('Cart item not found.', HttpStatus.NOT_FOUND);
+    }
+
+    // check that product exists - if one is passed in
+    cartItem.product = updateCartItemDto.productId
+      ? await this.entityManager.findOne(Product, updateCartItemDto.productId)
+      : cartItem.product;
+    if (!cartItem.product) {
+      throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
+    }
+
+    // check that size exists - if one is passed in
+    cartItem.size = updateCartItemDto.sizeId
+      ? await this.entityManager.findOne(Size, updateCartItemDto.sizeId)
+      : cartItem.size;
+    if (!cartItem.size) {
+      throw new HttpException('Size not found.', HttpStatus.NOT_FOUND);
+    }
+
+    // assign quantity if one exists
+    cartItem.quantity =
+      updateCartItemDto.quantity != null
+        ? updateCartItemDto.quantity
+        : cartItem.quantity;
+    if (cartItem.quantity < 1) {
+      throw new HttpException('Invalid quantity.', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.entityManager.save(CartItem, cartItem);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cartItem`;
+  async remove(cartItemId: number) {
+    // check that cart item exists
+    let cartItem = await this.entityManager.findOne(CartItem, cartItemId);
+    if (!cartItem) {
+      throw new HttpException('Cart item not found.', HttpStatus.NOT_FOUND);
+    }
+
+    return this.entityManager.delete(CartItem, cartItemId);
   }
 }
