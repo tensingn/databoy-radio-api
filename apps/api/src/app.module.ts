@@ -15,6 +15,8 @@ import { Product } from './routes/products/entities/product.entity';
 import { Image } from './routes/products/entities/image.entity';
 import { Size } from './routes/products/entities/size.entity';
 import { CartItem } from './routes/cart-items/entities/cart-item.entity';
+import { MixesModule } from './routes/mixes/mixes.module';
+import { DropboxService } from './services/dropbox/dropbox.service';
 
 @Module({
   imports: [
@@ -30,8 +32,9 @@ import { CartItem } from './routes/cart-items/entities/cart-item.entity';
     }),
     ProductsModule,
     CartItemsModule,
+    MixesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DropboxService],
 })
 export class AppModule {}
