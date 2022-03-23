@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Product } from 'apps/api/src/routes/store/products/entities/product.entity';
+import { Product } from 'apps/api/src/routes/products/entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 

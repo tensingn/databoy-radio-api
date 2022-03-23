@@ -7,14 +7,14 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // our modules
-import { ProductsModule } from './routes/store/products/products.module';
-import { CartItemsModule } from './routes/store/cart-items/cart-items.module';
+import { ProductsModule } from './routes/products/products.module';
+import { CartItemsModule } from './routes/cart-items/cart-items.module';
 
 // entities
-import { Product } from './routes/store/products/entities/product.entity';
-import { Image } from './routes/store/products/entities/image.entity';
-import { Size } from './routes/store/products/entities/size.entity';
-import { CartItem } from './routes/store/cart-items/entities/cart-item.entity';
+import { Product } from './routes/products/entities/product.entity';
+import { Image } from './routes/products/entities/image.entity';
+import { Size } from './routes/products/entities/size.entity';
+import { CartItem } from './routes/cart-items/entities/cart-item.entity';
 
 @Module({
   imports: [
