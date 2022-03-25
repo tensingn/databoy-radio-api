@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { MixesService } from './mixes.service';
-@Controller('mixes')
+@Controller('api/mixes')
 export class MixesController {
   constructor(private readonly mixesService: MixesService) {}
 
