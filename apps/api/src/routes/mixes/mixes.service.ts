@@ -12,16 +12,20 @@ export class MixesService {
   ) {}
 
   findAll() {
-    return this.mixRepository.find();
+    return this.mixRepository.find({
+      relations: ['release'],
+    });
     // return this.dropboxService.list_folder();
   }
 
   async findOne(mixId: number) {
-    let mix = await this.mixRepository.findOne(mixId);
+    let mix = await this.mixRepository.findOne(mixId, {
+      relations: ['release'],
+    });
     if (!mix) {
       throw new HttpException('Mix not found.', HttpStatus.NOT_FOUND);
     }
 
-    return this.mixRepository.findOne(mixId);
+    return mix;
   }
 }

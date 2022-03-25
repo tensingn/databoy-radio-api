@@ -52,10 +52,15 @@ export class CartItemsService {
     });
   }
 
-  findOne(cartItemId: number) {
-    return this.entityManager.findOne(CartItem, cartItemId, {
+  async findOne(cartItemId: number) {
+    let cartItem = await this.entityManager.findOne(CartItem, cartItemId, {
       relations: ['product', 'size'],
     });
+    if (!cartItem) {
+      throw new HttpException('Cart item not found.', HttpStatus.NOT_FOUND);
+    }
+
+    return cartItem;
   }
 
   async update(cartItemId: number, updateCartItemDto: UpdateCartItemDto) {

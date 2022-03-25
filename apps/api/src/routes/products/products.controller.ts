@@ -19,10 +19,6 @@ export class ProductsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Product> {
-    let product = await this.productsService.findOne(+id);
-    if (!product) {
-      throw new HttpException('Product not found.', HttpStatus.NOT_FOUND);
-    }
-    return product;
+    return this.productsService.findOne(+id);
   }
 }

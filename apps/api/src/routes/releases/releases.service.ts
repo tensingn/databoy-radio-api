@@ -1,12 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Release } from './entities/release.entity';
 
 @Injectable()
 export class ReleasesService {
+  constructor(
+    @InjectRepository(Release)
+    private releaseRepository: Repository<Release>,
+  ) {}
+
   findAll() {
-    return `This action returns all releases`;
+    return this.releaseRepository.find({
+      relations: ['mixes'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} release`;
+  async findOne(releaseId: number) {
+    let release = await this.releaseRepository.findOne(releaseId, {
+      relations: ['mixes'],
+    });
+    if (!release) {
+      throw new HttpException('Release not found.', HttpStatus.NOT_FOUND);
+    }
+
+    return release;
   }
 }
