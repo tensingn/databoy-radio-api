@@ -17,6 +17,9 @@ import { Size } from './routes/products/entities/size.entity';
 import { CartItem } from './routes/cart-items/entities/cart-item.entity';
 import { MixesModule } from './routes/mixes/mixes.module';
 import { DropboxService } from './services/dropbox/dropbox.service';
+import { Mix } from './routes/mixes/entities/mix.entity';
+import { ReleasesModule } from './routes/releases/releases.module';
+import { Release } from './routes/releases/entities/release.entity';
 
 @Module({
   imports: [
@@ -27,12 +30,13 @@ import { DropboxService } from './services/dropbox/dropbox.service';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_DB,
-      entities: [Product, Image, Size, CartItem],
+      entities: [Product, Image, Size, CartItem, Mix, Release],
       synchronize: true,
     }),
     ProductsModule,
     CartItemsModule,
     MixesModule,
+    ReleasesModule,
   ],
   controllers: [AppController],
   providers: [AppService, DropboxService],
