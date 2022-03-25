@@ -20,6 +20,9 @@ import { DropboxService } from './services/dropbox/dropbox.service';
 import { Mix } from './routes/mixes/entities/mix.entity';
 import { ReleasesModule } from './routes/releases/releases.module';
 import { Release } from './routes/releases/entities/release.entity';
+import { CalendarEventsModule } from './routes/calendar-events/calendar-events.module';
+import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.entity';
+import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
 
 @Module({
   imports: [
@@ -30,13 +33,23 @@ import { Release } from './routes/releases/entities/release.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_DB,
-      entities: [Product, Image, Size, CartItem, Mix, Release],
+      entities: [
+        Product,
+        Image,
+        Size,
+        CartItem,
+        Mix,
+        Release,
+        CalendarEvent,
+        CalendarEventType,
+      ],
       synchronize: true,
     }),
     ProductsModule,
     CartItemsModule,
     MixesModule,
     ReleasesModule,
+    CalendarEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, DropboxService],

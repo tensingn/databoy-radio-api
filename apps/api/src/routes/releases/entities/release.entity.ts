@@ -4,7 +4,7 @@ import { Mix } from '../../mixes/entities/mix.entity';
 @Entity()
 export class Release {
   @PrimaryGeneratedColumn()
-  id: number;
+  releaseId: number;
 
   @Column()
   title: string;
