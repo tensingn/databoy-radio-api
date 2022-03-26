@@ -10,6 +10,7 @@ export class CalendarEventsService {
     private calendarEventRepository: Repository<CalendarEvent>,
   ) {}
 
+  // gets all calendar events
   findAll() {
     return this.calendarEventRepository.find({
       relations: ['calendarEventType'],
