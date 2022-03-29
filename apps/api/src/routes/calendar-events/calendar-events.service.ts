@@ -17,7 +17,6 @@ export class CalendarEventsService {
     });
   }
 
-  // get calendar event by id
   async findOne(calendarEventId: number) {
     let calendarEvent = await this.calendarEventRepository.findOne(
       calendarEventId,
