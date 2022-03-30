@@ -23,6 +23,7 @@ import { Release } from './routes/releases/entities/release.entity';
 import { CalendarEventsModule } from './routes/calendar-events/calendar-events.module';
 import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.entity';
 import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
+import { DateEvent } from './routes/calendar-events/entities/date-event.entity';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CalendarEventType } from './routes/calendar-events/entities/calendar-ev
         Release,
         CalendarEvent,
         CalendarEventType,
+        DateEvent,
       ],
       synchronize: true,
     }),
