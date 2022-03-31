@@ -21,6 +21,9 @@ export class DateEventsService {
       where: {
         date: MoreThanOrEqual(date),
       },
+      order: {
+        date: 'ASC',
+      },
     });
   }
 
