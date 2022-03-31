@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CalendarEventType } from './calendar-event-type.entity';
-import { DateEvent } from './date-event.entity';
+import { DateEvent } from '../../date-events/entities/date-event.entity';
 
 @Entity()
 export class CalendarEvent {

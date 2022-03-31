@@ -23,7 +23,9 @@ import { Release } from './routes/releases/entities/release.entity';
 import { CalendarEventsModule } from './routes/calendar-events/calendar-events.module';
 import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.entity';
 import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
-import { DateEvent } from './routes/calendar-events/entities/date-event.entity';
+import { DateEvent } from './routes/date-events/entities/date-event.entity';
+import { DateEventsModule } from './routes/date-events/date-events.module';
+import { DateService } from './services/date/date.service';
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { DateEvent } from './routes/calendar-events/entities/date-event.entity';
     MixesModule,
     ReleasesModule,
     CalendarEventsModule,
+    DateEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, DropboxService],
