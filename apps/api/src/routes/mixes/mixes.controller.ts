@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Header, Param } from '@nestjs/common';
 import { MixesService } from './mixes.service';
 
 @Controller('api/mixes')
@@ -10,10 +10,12 @@ export class MixesController {
     return this.mixesService.findAll();
   }
 
-  // @Get(':id/src')
-  // findOneSrc(@Param('id') id: string) {
-  //   return this.mixesService.findOneSrc(+id);
-  // }
+  @Get('file')
+  @Header('content-type', 'audio/mp4')
+  findAudioByFileName() {
+    let fileName = 'Release 1 - Mix 1.m4a';
+    return this.mixesService.findAudioFileByName(fileName);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

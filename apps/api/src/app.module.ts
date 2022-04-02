@@ -26,7 +26,7 @@ import { CalendarEventType } from './routes/calendar-events/entities/calendar-ev
 import { DateEvent } from './routes/date-events/entities/date-event.entity';
 
 // services
-import { DropboxService } from './services/dropbox/dropbox.service';
+import { StorageService } from './services/storage/storage.service';
 
 @Module({
   imports: [
@@ -58,6 +58,6 @@ import { DropboxService } from './services/dropbox/dropbox.service';
     DateEventsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, DropboxService],
+  providers: [AppService, StorageService],
 })
 export class AppModule {}

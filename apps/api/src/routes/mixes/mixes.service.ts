@@ -1,21 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { StorageService } from '../../services/storage/storage.service';
 import { Mix } from './entities/mix.entity';
 
 @Injectable()
 export class MixesService {
-  // constructor(private dropboxService: DropboxService) {}
   constructor(
     @InjectRepository(Mix)
     private mixRepository: Repository<Mix>,
+    private storageService: StorageService,
   ) {}
 
   findAll() {
     return this.mixRepository.find({
       relations: ['release'],
     });
-    // return this.dropboxService.list_folder();
   }
 
   async findOne(mixId: number) {
@@ -27,5 +27,9 @@ export class MixesService {
     }
 
     return mix;
+  }
+
+  findAudioFileByName(mixName: string) {
+    return this.storageService.getObject(mixName);
   }
 }
