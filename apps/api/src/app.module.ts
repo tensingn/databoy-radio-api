@@ -25,9 +25,6 @@ import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.
 import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
 import { DateEvent } from './routes/date-events/entities/date-event.entity';
 
-// services
-import { StorageService } from './services/storage/storage.service';
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -58,6 +55,6 @@ import { StorageService } from './services/storage/storage.service';
     DateEventsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, StorageService],
+  providers: [AppService],
 })
 export class AppModule {}

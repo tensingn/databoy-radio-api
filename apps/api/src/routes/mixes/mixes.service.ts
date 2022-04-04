@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { StorageService } from '../../services/storage/storage.service';
 import { Mix } from './entities/mix.entity';
 
 @Injectable()
@@ -9,7 +8,6 @@ export class MixesService {
   constructor(
     @InjectRepository(Mix)
     private mixRepository: Repository<Mix>,
-    private storageService: StorageService,
   ) {}
 
   findAll() {
@@ -27,9 +25,5 @@ export class MixesService {
     }
 
     return mix;
-  }
-
-  findAudioFileByName(mixName: string) {
-    return this.storageService.getObject(mixName);
   }
 }
