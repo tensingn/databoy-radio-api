@@ -9,7 +9,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // our modules
 import { ProductsModule } from './routes/products/products.module';
 import { CartItemsModule } from './routes/cart-items/cart-items.module';
-import { DateEventsModule } from './routes/date-events/date-events.module';
 import { MixesModule } from './routes/mixes/mixes.module';
 import { ReleasesModule } from './routes/releases/releases.module';
 import { CalendarEventsModule } from './routes/calendar-events/calendar-events.module';
@@ -23,7 +22,6 @@ import { Mix } from './routes/mixes/entities/mix.entity';
 import { Release } from './routes/releases/entities/release.entity';
 import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.entity';
 import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
-import { DateEvent } from './routes/date-events/entities/date-event.entity';
 
 @Module({
   imports: [
@@ -43,7 +41,6 @@ import { DateEvent } from './routes/date-events/entities/date-event.entity';
         Release,
         CalendarEvent,
         CalendarEventType,
-        DateEvent,
       ],
       synchronize: true,
     }),
@@ -52,7 +49,6 @@ import { DateEvent } from './routes/date-events/entities/date-event.entity';
     MixesModule,
     ReleasesModule,
     CalendarEventsModule,
-    DateEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
