@@ -12,13 +12,13 @@ export class ReleasesService {
 
   findAll() {
     return this.releaseRepository.find({
-      relations: ['mixes'],
+      // relations: ['mixes'],
     });
   }
 
   async findOne(releaseId: number) {
     let release = await this.releaseRepository.findOne(releaseId, {
-      relations: ['mixes'],
+      relations: ['mixes', 'mixes.release'],
     });
     if (!release) {
       throw new HttpException('Release not found.', HttpStatus.NOT_FOUND);
