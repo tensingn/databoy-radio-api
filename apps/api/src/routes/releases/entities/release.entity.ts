@@ -14,4 +14,7 @@ export class Release {
 
   @OneToMany(() => Mix, (mix) => mix.release)
   mixes: Mix[];
+
+  @Column()
+  likes: number;
 }
