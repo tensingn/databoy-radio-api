@@ -3,9 +3,10 @@ import { MixesService } from './mixes.service';
 import { MixesController } from './mixes.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Mix } from './entities/mix.entity';
+import { MixLike } from './entities/mix-like.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Mix])],
+  imports: [TypeOrmModule.forFeature([Mix, MixLike])],
   controllers: [MixesController],
   providers: [MixesService],
 })

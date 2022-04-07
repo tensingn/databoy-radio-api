@@ -22,6 +22,7 @@ import { Mix } from './routes/mixes/entities/mix.entity';
 import { Release } from './routes/releases/entities/release.entity';
 import { CalendarEvent } from './routes/calendar-events/entities/calendar-event.entity';
 import { CalendarEventType } from './routes/calendar-events/entities/calendar-event-type.entity';
+import { MixLike } from './routes/mixes/entities/mix-like.entity';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CalendarEventType } from './routes/calendar-events/entities/calendar-ev
         Release,
         CalendarEvent,
         CalendarEventType,
+        MixLike,
       ],
       synchronize: true,
     }),
