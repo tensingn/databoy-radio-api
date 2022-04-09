@@ -30,8 +30,14 @@ export class MixesService {
     return this.mixMapper.mixToGetMixDto(mix);
   }
 
-  async createMixLike(mixId: number, subscriberId: any) {
+  async createMixLike(mixId: number, subscriberId: number) {
     let mix = await this._findOne(mixId);
+
+    // first need to check if mix is already liked by this subscriber
+    if (await this._findMixLike(mixId, subscriberId)) {
+      throw new HttpException('', HttpStatus.NO_CONTENT);
+    }
+
     let mixLike = this.mixLikeRepository.create({
       mix: mix,
       subscriberId: subscriberId,
@@ -47,6 +53,27 @@ export class MixesService {
     }
   }
 
+  async removeMixLike(mixId: number, subscriberId: number) {
+    let mixLike = await this._findMixLike(mixId, subscriberId);
+
+    // first need to check if mix is liked by this subscriber
+    if (!mixLike) {
+      throw new HttpException(
+        'Mix is not currently liked by subscriber.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (await this.mixLikeRepository.delete(mixLike.mixLikeId)) {
+      return;
+    } else {
+      throw new HttpException(
+        'Error removing mix like.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   private async _findOne(mixId: number) {
     let mix = await this.mixRepository.findOne(mixId, {
       relations: ['release', 'likes'],
@@ -56,5 +83,15 @@ export class MixesService {
     }
 
     return mix;
+  }
+
+  private async _findMixLike(mixId: number, subscriberId: number) {
+    let mix = await this._findOne(mixId);
+    let mixLike = mix.likes.find((like) => like.subscriberId == subscriberId);
+    if (mixLike) {
+      return mixLike;
+    } else {
+      return null;
+    }
   }
 }

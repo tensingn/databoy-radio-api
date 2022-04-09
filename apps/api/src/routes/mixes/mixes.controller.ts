@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateMixLikeDto } from './dto/create-mix-like.dto';
 import { MixesService } from './mixes.service';
 
@@ -19,5 +19,13 @@ export class MixesController {
   @Post(':id/likes')
   createMixLike(@Param('id') id: number, @Body() body: CreateMixLikeDto) {
     return this.mixesService.createMixLike(+id, body.subscriberId);
+  }
+
+  @Delete(':mixId/likes/:subscriberId')
+  deleteMixLike(
+    @Param('mixId') mixId: number,
+    @Param('subscriberId') subscriberId: number,
+  ) {
+    return this.mixesService.removeMixLike(+mixId, +subscriberId);
   }
 }
