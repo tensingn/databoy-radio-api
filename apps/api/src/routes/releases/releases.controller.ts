@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateReleaseLikeDto } from './dto/create-release-like.dto';
 import { ReleasesService } from './releases.service';
 
@@ -22,5 +22,13 @@ export class ReleasesController {
     @Body() body: CreateReleaseLikeDto,
   ) {
     return this.releasesService.createReleaseLike(+id, body.subscriberId);
+  }
+
+  @Delete(':releaseId/likes/:subscriberId')
+  deleteReleaseLike(
+    @Param('releaseId') releaseId: number,
+    @Param('subscriberId') subscriberId: number,
+  ) {
+    return this.releasesService.removeReleaseLike(+releaseId, +subscriberId);
   }
 }
