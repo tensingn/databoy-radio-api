@@ -18,7 +18,4 @@ export class Release {
 
   @OneToMany(() => ReleaseLike, (releaseLike) => releaseLike.release)
   likes: ReleaseLike[];
-
-  @Column()
-  numLikes: number;
 }
