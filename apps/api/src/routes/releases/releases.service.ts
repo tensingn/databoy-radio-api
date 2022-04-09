@@ -18,7 +18,7 @@ export class ReleasesService {
 
   async findAll() {
     let releases = await this.releaseRepository.find({
-      relations: ['mixes', 'likes'],
+      relations: ['likes'],
     });
 
     return this.releaseMapper.releasesToGetReleaseDtos(releases);
@@ -37,12 +37,19 @@ export class ReleasesService {
       subscriberId: subscriberId,
     });
 
-    return this.releaseLikeRepository.save(releaseLike);
+    if (await this.releaseLikeRepository.save(releaseLike)) {
+      return;
+    } else {
+      throw new HttpException(
+        'Error creating release like.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private async _findOne(releaseId: number) {
     let release = await this.releaseRepository.findOne(releaseId, {
-      relations: ['mixes', 'mixes.release', 'likes'],
+      relations: ['mixes', 'mixes.release', 'mixes.likes', 'likes'],
     });
     if (!release) {
       throw new HttpException('Release not found.', HttpStatus.NOT_FOUND);

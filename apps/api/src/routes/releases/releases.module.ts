@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Release } from './entities/release.entity';
 import { ReleaseLike } from './entities/release-like.entity';
 import { ReleaseMapperService } from './services/release-mapper.service';
+import { MixMapperService } from '../mixes/services/mix-mapper.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Release, ReleaseLike])],
   controllers: [ReleasesController],
-  providers: [ReleasesService, ReleaseMapperService],
+  providers: [ReleasesService, ReleaseMapperService, MixMapperService],
 })
 export class ReleasesModule {}

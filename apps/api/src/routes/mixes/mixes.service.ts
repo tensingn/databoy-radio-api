@@ -37,7 +37,14 @@ export class MixesService {
       subscriberId: subscriberId,
     });
 
-    return this.mixLikeRepository.save(mixLike);
+    if (await this.mixLikeRepository.save(mixLike)) {
+      return;
+    } else {
+      throw new HttpException(
+        'Error creating mix like.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private async _findOne(mixId: number) {
