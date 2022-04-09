@@ -16,9 +16,6 @@ export class Mix {
   @Column()
   title: string;
 
-  @Column()
-  numLikes: number;
-
   @OneToMany(() => MixLike, (mixLike) => mixLike.mix)
   likes: MixLike[];
 

@@ -1,9 +1,9 @@
-import { Mix } from '../../mixes/entities/mix.entity';
+import { GetMixDto } from '../../mixes/dto/get-mix.dto';
 
 export class GetReleaseDto {
   releaseId: number;
   title: string;
   releaseDate: Date;
-  mixes: Mix[];
+  mixes?: GetMixDto[];
   likes: number;
 }
