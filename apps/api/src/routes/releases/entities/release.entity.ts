@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Mix } from '../../mixes/entities/mix.entity';
+import { ReleaseLike } from './release-like.entity';
 
 @Entity()
 export class Release {
@@ -15,6 +16,9 @@ export class Release {
   @OneToMany(() => Mix, (mix) => mix.release)
   mixes: Mix[];
 
+  @OneToMany(() => ReleaseLike, (releaseLike) => releaseLike.release)
+  likes: ReleaseLike[];
+
   @Column()
-  likes: number;
+  numLikes: number;
 }

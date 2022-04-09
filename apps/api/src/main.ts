@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import path from 'path';
+import { ValidationPipe } from '@nestjs/common';
 
 declare const module: any;
 
@@ -12,7 +13,7 @@ async function bootstrap() {
     origin: process.env.WEB_URL,
     credentials: true,
   });
-  app.useStaticAssets(path.join(__dirname, '/../../assets'));
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(process.env.PORT || 3000);
 
