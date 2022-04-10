@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Subscriber } from '../../subscribers/entities/subscriber.entity';
 import { Mix } from './mix.entity';
 
 @Entity()
@@ -16,6 +17,7 @@ export class MixLike {
   @JoinColumn({ name: 'mixId' })
   mix: Mix;
 
-  @Column()
-  subscriberId: number;
+  @ManyToOne(() => Subscriber, (subscriber) => subscriber.mixLikes)
+  @JoinColumn({ name: 'subscriberId' })
+  subscriber: Subscriber;
 }
