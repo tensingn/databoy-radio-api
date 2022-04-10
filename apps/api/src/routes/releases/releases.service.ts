@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SubscribersService } from '../subscribers/subscribers.service';
 import { ReleaseLike } from './entities/release-like.entity';
 import { Release } from './entities/release.entity';
 import { ReleaseMapperService } from './services/release-mapper.service';
@@ -14,6 +15,8 @@ export class ReleasesService {
     private releaseLikeRepository: Repository<ReleaseLike>,
     @Inject(ReleaseMapperService)
     private releaseMapper: ReleaseMapperService,
+    @Inject(SubscribersService)
+    private subscribersService: SubscribersService,
   ) {}
 
   async findAll() {
@@ -32,6 +35,7 @@ export class ReleasesService {
 
   async createReleaseLike(releaseId: number, subscriberId: any) {
     let release = await this._findOne(releaseId);
+    let subscriber = await this.subscribersService.findOne(subscriberId);
 
     // first need to check if release is already liked by this subscriber
     if (await this._findReleaseLike(releaseId, subscriberId)) {
@@ -40,7 +44,7 @@ export class ReleasesService {
 
     let releaseLike = this.releaseLikeRepository.create({
       release: release,
-      subscriberId: subscriberId,
+      subscriber: subscriber,
     });
 
     if (await this.releaseLikeRepository.save(releaseLike)) {
@@ -76,7 +80,13 @@ export class ReleasesService {
 
   private async _findOne(releaseId: number) {
     let release = await this.releaseRepository.findOne(releaseId, {
-      relations: ['mixes', 'mixes.release', 'mixes.likes', 'likes'],
+      relations: [
+        'mixes',
+        'mixes.release',
+        'mixes.likes',
+        'likes',
+        'likes.subscriber',
+      ],
     });
     if (!release) {
       throw new HttpException('Release not found.', HttpStatus.NOT_FOUND);
@@ -88,7 +98,7 @@ export class ReleasesService {
   private async _findReleaseLike(releaseId: number, subscriberId: number) {
     let release = await this._findOne(releaseId);
     let releaseLike = release.likes.find(
-      (like) => like.subscriberId == subscriberId,
+      (like) => like.subscriber.subscriberId == subscriberId,
     );
     if (releaseLike) {
       return releaseLike;

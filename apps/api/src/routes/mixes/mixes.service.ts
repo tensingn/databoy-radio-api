@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { SubscribersService } from '../subscribers/subscribers.service';
 import { MixLike } from './entities/mix-like.entity';
 import { Mix } from './entities/mix.entity';
 import { MixMapperService } from './services/mix-mapper.service';
@@ -14,6 +15,8 @@ export class MixesService {
     private mixLikeRepository: Repository<MixLike>,
     @Inject(MixMapperService)
     private mixMapper: MixMapperService,
+    @Inject(SubscribersService)
+    private subscribersService: SubscribersService,
   ) {}
 
   async findAll() {
@@ -32,15 +35,16 @@ export class MixesService {
 
   async createMixLike(mixId: number, subscriberId: number) {
     let mix = await this._findOne(mixId);
+    let subscriber = await this.subscribersService.findOne(subscriberId);
 
     // first need to check if mix is already liked by this subscriber
-    if (await this._findMixLike(mixId, subscriberId)) {
+    if (await this._findMixLike(mixId, subscriber.subscriberId)) {
       throw new HttpException('', HttpStatus.NO_CONTENT);
     }
 
     let mixLike = this.mixLikeRepository.create({
       mix: mix,
-      subscriberId: subscriberId,
+      subscriber: subscriber,
     });
 
     if (await this.mixLikeRepository.save(mixLike)) {
@@ -76,7 +80,7 @@ export class MixesService {
 
   private async _findOne(mixId: number) {
     let mix = await this.mixRepository.findOne(mixId, {
-      relations: ['release', 'likes'],
+      relations: ['release', 'likes', 'likes.subscriber'],
     });
     if (!mix) {
       throw new HttpException('Mix not found.', HttpStatus.NOT_FOUND);
@@ -87,7 +91,9 @@ export class MixesService {
 
   private async _findMixLike(mixId: number, subscriberId: number) {
     let mix = await this._findOne(mixId);
-    let mixLike = mix.likes.find((like) => like.subscriberId == subscriberId);
+    let mixLike = mix.likes.find(
+      (like) => like.subscriber.subscriberId == subscriberId,
+    );
     if (mixLike) {
       return mixLike;
     } else {
