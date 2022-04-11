@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateMixLikeDto } from './dto/create-mix-like.dto';
 import { MixesService } from './mixes.service';
 
@@ -7,8 +15,8 @@ export class MixesController {
   constructor(private readonly mixesService: MixesService) {}
 
   @Get()
-  findAll() {
-    return this.mixesService.findAll();
+  findAll(@Query('subscriberId') subscriberId: number) {
+    return this.mixesService.findAll(subscriberId);
   }
 
   @Get(':mixId')

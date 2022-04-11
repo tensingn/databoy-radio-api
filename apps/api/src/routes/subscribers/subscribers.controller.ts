@@ -43,14 +43,14 @@ export class SubscribersController {
     return this.subscribersService.remove(+subscriberId);
   }
 
-  @Get(':subscriberId/mixLikes')
+  @Get(':subscriberId/mix-likes')
   getAllMixLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
-    return this.subscribersService.getAllMixLikesForSubscriber(subscriberId);
+    return this.subscribersService.getAllMixesLikedBySubscriber(subscriberId);
   }
 
-  @Get(':subscriberId/releaseLikes')
+  @Get(':subscriberId/release-likes')
   getAllReleaseLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
-    return this.subscribersService.getAllReleaseLikesForSubscriber(
+    return this.subscribersService.getAllReleasesLikedBySubscriber(
       subscriberId,
     );
   }

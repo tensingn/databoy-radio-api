@@ -6,6 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MixLike } from '../mixes/entities/mix-like.entity';
+import { Mix } from '../mixes/entities/mix.entity';
+import { Release } from '../releases/entities/release.entity';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { Subscriber } from './entities/subscriber.entity';
@@ -48,15 +51,32 @@ export class SubscribersService {
     throw new NotImplementedException('Remove subscriber not yet implemented');
   }
 
-  async getAllMixLikesForSubscriber(subscriberId: number) {
-    return await this._findOne(subscriberId, ['mixLikes', 'mixLikes.mix']);
+  async getAllMixesLikedBySubscriber(subscriberId: number) {
+    let subscriber = await this._findOne(subscriberId, [
+      'mixLikes',
+      'mixLikes.mix',
+    ]);
+
+    let mixes: Mix[] = [];
+    subscriber.mixLikes.forEach((like) => {
+      mixes.push(like.mix);
+    });
+
+    return mixes;
   }
 
-  async getAllReleaseLikesForSubscriber(subscriberId: number) {
-    return await this._findOne(subscriberId, [
+  async getAllReleasesLikedBySubscriber(subscriberId: number) {
+    let subscriber = await this._findOne(subscriberId, [
       'releaseLikes',
       'releaseLikes.release',
     ]);
+
+    let releases: Release[] = [];
+    subscriber.releaseLikes.forEach((like) => {
+      releases.push(like.release);
+    });
+
+    return releases;
   }
 
   private async _findOne(subscriberId: number, relations?: string[]) {
