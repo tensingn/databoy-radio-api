@@ -11,14 +11,14 @@ export class MixesController {
     return this.mixesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mixesService.findOne(+id);
+  @Get(':mixId')
+  findOne(@Param('mixId') mixId: number) {
+    return this.mixesService.findOne(+mixId);
   }
 
-  @Post(':id/likes')
-  createMixLike(@Param('id') id: number, @Body() body: CreateMixLikeDto) {
-    return this.mixesService.createMixLike(+id, body.subscriberId);
+  @Post(':mixId/likes')
+  createMixLike(@Param('mixId') mixId: number, @Body() body: CreateMixLikeDto) {
+    return this.mixesService.createMixLike(+mixId, body.subscriberId);
   }
 
   @Delete(':mixId/likes/:subscriberId')

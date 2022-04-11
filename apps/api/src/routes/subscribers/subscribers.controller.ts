@@ -26,20 +26,32 @@ export class SubscribersController {
   }
 
   @Get(':subscriberId')
-  findOne(@Param('subscriberId') subscriberId: string) {
+  findOne(@Param('subscriberId') subscriberId: number) {
     return this.subscribersService.findOne(+subscriberId);
   }
 
   @Patch(':subscriberId')
   update(
-    @Param('subscriberId') subscriberId: string,
+    @Param('subscriberId') subscriberId: number,
     @Body() updateSubscriberDto: UpdateSubscriberDto,
   ) {
     return this.subscribersService.update(+subscriberId, updateSubscriberDto);
   }
 
   @Delete(':subscriberId')
-  remove(@Param('subscriberId') subscriberId: string) {
+  remove(@Param('subscriberId') subscriberId: number) {
     return this.subscribersService.remove(+subscriberId);
+  }
+
+  @Get(':subscriberId/mixLikes')
+  getAllMixLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
+    return this.subscribersService.getAllMixLikesForSubscriber(subscriberId);
+  }
+
+  @Get(':subscriberId/releaseLikes')
+  getAllReleaseLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
+    return this.subscribersService.getAllReleaseLikesForSubscriber(
+      subscriberId,
+    );
   }
 }

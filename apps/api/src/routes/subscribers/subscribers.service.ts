@@ -40,16 +40,29 @@ export class SubscribersService {
     return await this._findOne(subscriberId);
   }
 
-  update(id: number, updateSubscriberDto: UpdateSubscriberDto) {
+  update(subscriberId: number, updateSubscriberDto: UpdateSubscriberDto) {
     throw new NotImplementedException('Update subscriber not yet implemented');
   }
 
-  remove(id: number) {
+  remove(subscriberId: number) {
     throw new NotImplementedException('Remove subscriber not yet implemented');
   }
 
-  private async _findOne(subscriberId: number) {
-    let subscriber = await this.subscriberRepository.findOne(subscriberId);
+  async getAllMixLikesForSubscriber(subscriberId: number) {
+    return await this._findOne(subscriberId, ['mixLikes', 'mixLikes.mix']);
+  }
+
+  async getAllReleaseLikesForSubscriber(subscriberId: number) {
+    return await this._findOne(subscriberId, [
+      'releaseLikes',
+      'releaseLikes.release',
+    ]);
+  }
+
+  private async _findOne(subscriberId: number, relations?: string[]) {
+    let subscriber = await this.subscriberRepository.findOne(subscriberId, {
+      relations: relations,
+    });
 
     if (subscriber) {
       return subscriber;

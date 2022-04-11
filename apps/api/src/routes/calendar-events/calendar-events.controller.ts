@@ -10,8 +10,8 @@ export class CalendarEventsController {
     return this.calendarEventsService.findAll(daysAgo);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.calendarEventsService.findOne(+id);
+  @Get(':calendarEventId')
+  findOne(@Param('calendarEventId') calendarEventId: number) {
+    return this.calendarEventsService.findOne(+calendarEventId);
   }
 }
