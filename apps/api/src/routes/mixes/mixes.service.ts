@@ -19,12 +19,24 @@ export class MixesService {
     private subscribersService: SubscribersService,
   ) {}
 
-  async findAll() {
-    let mixes = await this.mixRepository.find({
-      relations: ['release', 'likes'],
-    });
+  async findAll(subscriberId: number) {
+    if (subscriberId == null) {
+      let mixes = await this.mixRepository.find({
+        relations: ['release', 'likes'],
+      });
 
-    return this.mixMapper.mixesToGetMixDtos(mixes);
+      return this.mixMapper.mixesToGetMixDtos(mixes);
+    } else {
+      let mixes = await this.mixRepository.find({
+        relations: ['release', 'likes'],
+      });
+      let likedMixes =
+        await this.subscribersService.getAllMixesLikedBySubscriber(
+          subscriberId,
+        );
+
+      return this.mixMapper.mixesToLikedMixDtos(mixes, likedMixes);
+    }
   }
 
   async findOne(mixId: number) {

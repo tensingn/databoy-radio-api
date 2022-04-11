@@ -17,8 +17,8 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Product> {
-    return this.productsService.findOne(+id);
+  @Get(':productId')
+  async findOne(@Param('productId') productId: number): Promise<Product> {
+    return this.productsService.findOne(+productId);
   }
 }

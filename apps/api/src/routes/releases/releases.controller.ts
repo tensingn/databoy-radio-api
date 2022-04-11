@@ -11,17 +11,20 @@ export class ReleasesController {
     return this.releasesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.releasesService.findOne(+id);
+  @Get(':releaseId')
+  findOne(@Param('releaseId') releaseId: number) {
+    return this.releasesService.findOne(+releaseId);
   }
 
-  @Post(':id/likes')
+  @Post(':releaseId/likes')
   createreleaseLike(
-    @Param('id') id: number,
+    @Param('releaseId') releaseId: number,
     @Body() body: CreateReleaseLikeDto,
   ) {
-    return this.releasesService.createReleaseLike(+id, body.subscriberId);
+    return this.releasesService.createReleaseLike(
+      +releaseId,
+      body.subscriberId,
+    );
   }
 
   @Delete(':releaseId/likes/:subscriberId')

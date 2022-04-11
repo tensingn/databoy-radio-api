@@ -27,21 +27,21 @@ export class CartItemsController {
     return this.cartItemsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartItemsService.findOne(+id);
+  @Get(':cartItemId')
+  findOne(@Param('cartItemId') cartItemId: number) {
+    return this.cartItemsService.findOne(+cartItemId);
   }
 
-  @Patch(':id')
+  @Patch(':cartItemId')
   update(
-    @Param('id') id: string,
+    @Param('cartItemId') cartItemId: number,
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
-    return this.cartItemsService.update(+id, updateCartItemDto);
+    return this.cartItemsService.update(+cartItemId, updateCartItemDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartItemsService.remove(+id);
+  @Delete(':cartItemId')
+  remove(@Param('cartItemId') cartItemId: number) {
+    return this.cartItemsService.remove(+cartItemId);
   }
 }

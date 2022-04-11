@@ -3,6 +3,8 @@ import { SubscribersService } from './subscribers.service';
 import { SubscribersController } from './subscribers.controller';
 import { Subscriber } from './entities/subscriber.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ReleaseLike } from '../releases/entities/release-like.entity';
+import { MixLike } from '../mixes/entities/mix-like.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscriber])],
