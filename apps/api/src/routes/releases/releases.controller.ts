@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateReleaseLikeDto } from './dto/create-release-like.dto';
 import { ReleasesService } from './releases.service';
 
@@ -12,8 +20,11 @@ export class ReleasesController {
   }
 
   @Get(':releaseId')
-  findOne(@Param('releaseId') releaseId: number) {
-    return this.releasesService.findOne(+releaseId);
+  findOne(
+    @Param('releaseId') releaseId: number,
+    @Query('subscriberId') subscriberId: number,
+  ) {
+    return this.releasesService.findOne(+releaseId, subscriberId);
   }
 
   @Post(':releaseId/likes')
