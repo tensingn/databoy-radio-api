@@ -50,7 +50,7 @@ export class ReleaseMapperService {
     let dtos: LikedReleaseDto[] = [];
 
     releases.forEach((release) => {
-      this.releaseToLikedReleaseDto(release, likedReleases);
+      dtos.push(this.releaseToLikedReleaseDto(release, likedReleases));
     });
 
     return dtos;

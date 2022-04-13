@@ -29,10 +29,10 @@ export class MixesController {
     return this.mixesService.createMixLike(+mixId, body.subscriberId);
   }
 
-  @Delete(':mixId/likes/:subscriberId')
+  @Delete(':mixId/likes')
   deleteMixLike(
     @Param('mixId') mixId: number,
-    @Param('subscriberId') subscriberId: number,
+    @Query('subscriberId') subscriberId: number,
   ) {
     return this.mixesService.removeMixLike(+mixId, +subscriberId);
   }

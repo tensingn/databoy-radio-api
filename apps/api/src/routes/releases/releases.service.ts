@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 import { Repository } from 'typeorm';
 import { MixesService } from '../mixes/mixes.service';
 import { MixMapperService } from '../mixes/services/mix-mapper.service';
@@ -23,19 +24,32 @@ export class ReleasesService {
     private subscribersService: SubscribersService,
   ) {}
 
-  async findAll() {
-    let releases = await this.releaseRepository.find({
-      relations: ['likes'],
-    });
-
-    return this.releaseMapper.releasesToGetReleaseDtos(releases);
+  async findAll(subscriberId: number) {
+    if (subscriberId != null) {
+      let releases = await this.releaseRepository.find({
+        relations: ['likes', 'likes.subscriber'],
+      });
+      let likedReleases =
+        await this.subscribersService.getAllReleasesLikedBySubscriber(
+          subscriberId,
+        );
+      return this.releaseMapper.releasesToLikedReleaseDtos(
+        releases,
+        likedReleases,
+      );
+    } else {
+      let releases = await this.releaseRepository.find({
+        relations: ['likes'],
+      });
+      return this.releaseMapper.releasesToGetReleaseDtos(releases);
+    }
   }
 
   async findOne(releaseId: number, subscriberId: number) {
     let release = await this._findOne(releaseId);
 
     // if a subscriberId is passed in, then we need to add like data to the returned release
-    if (subscriberId) {
+    if (subscriberId != null) {
       // get all liked releases so we can tell if our release is liked
       let likedReleases =
         await this.subscribersService.getAllReleasesLikedBySubscriber(
@@ -67,7 +81,7 @@ export class ReleasesService {
     }
   }
 
-  async createReleaseLike(releaseId: number, subscriberId: any) {
+  async createReleaseLike(releaseId: number, subscriberId: number) {
     let release = await this._findOne(releaseId);
     let subscriber = await this.subscribersService.findOne(subscriberId);
 

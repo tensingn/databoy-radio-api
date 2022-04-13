@@ -15,8 +15,8 @@ export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
-  findAll() {
-    return this.releasesService.findAll();
+  findAll(@Query('subscriberId') subscriberId: number) {
+    return this.releasesService.findAll(subscriberId);
   }
 
   @Get(':releaseId')
@@ -38,10 +38,10 @@ export class ReleasesController {
     );
   }
 
-  @Delete(':releaseId/likes/:subscriberId')
+  @Delete(':releaseId/likes')
   deleteReleaseLike(
     @Param('releaseId') releaseId: number,
-    @Param('subscriberId') subscriberId: number,
+    @Query('subscriberId') subscriberId: number,
   ) {
     return this.releasesService.removeReleaseLike(+releaseId, +subscriberId);
   }
