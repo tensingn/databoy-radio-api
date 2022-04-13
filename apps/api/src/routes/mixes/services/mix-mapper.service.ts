@@ -26,23 +26,18 @@ export class MixMapperService {
     return dtos;
   }
 
+  mixToLikedMixDto(mix: Mix, likedMixes: Mix[]): LikedMixDto {
+    return {
+      ...this.mixToGetMixDto(mix),
+      isLiked: likedMixes.some((likedMix) => likedMix.mixId == mix.mixId),
+    };
+  }
+
   mixesToLikedMixDtos(mixes: Mix[], likedMixes: Mix[]): LikedMixDto[] {
     let dtos: LikedMixDto[] = [];
 
     mixes.forEach((mix) => {
-      let mixDto = this.mixToGetMixDto(mix);
-      let likedMix = likedMixes.find((lm) => lm.mixId == mix.mixId);
-      if (likedMix) {
-        dtos.push({
-          ...mixDto,
-          isLiked: true,
-        });
-      } else {
-        dtos.push({
-          ...mixDto,
-          isLiked: false,
-        });
-      }
+      dtos.push(this.mixToLikedMixDto(mix, likedMixes));
     });
 
     return dtos;

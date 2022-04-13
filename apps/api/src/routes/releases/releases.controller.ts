@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateReleaseLikeDto } from './dto/create-release-like.dto';
 import { ReleasesService } from './releases.service';
 
@@ -7,13 +15,16 @@ export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
-  findAll() {
-    return this.releasesService.findAll();
+  findAll(@Query('subscriberId') subscriberId: number) {
+    return this.releasesService.findAll(subscriberId);
   }
 
   @Get(':releaseId')
-  findOne(@Param('releaseId') releaseId: number) {
-    return this.releasesService.findOne(+releaseId);
+  findOne(
+    @Param('releaseId') releaseId: number,
+    @Query('subscriberId') subscriberId: number,
+  ) {
+    return this.releasesService.findOne(+releaseId, subscriberId);
   }
 
   @Post(':releaseId/likes')
@@ -27,10 +38,10 @@ export class ReleasesController {
     );
   }
 
-  @Delete(':releaseId/likes/:subscriberId')
+  @Delete(':releaseId/likes')
   deleteReleaseLike(
     @Param('releaseId') releaseId: number,
-    @Param('subscriberId') subscriberId: number,
+    @Query('subscriberId') subscriberId: number,
   ) {
     return this.releasesService.removeReleaseLike(+releaseId, +subscriberId);
   }
