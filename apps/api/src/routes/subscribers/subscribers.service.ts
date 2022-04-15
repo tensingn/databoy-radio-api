@@ -25,8 +25,9 @@ export class SubscribersService {
       email: createSubscriberDto.email,
     });
 
-    if (await this.subscriberRepository.save(subscriber)) {
-      return;
+    let createdSubscriber = await this.subscriberRepository.save(subscriber);
+    if (createdSubscriber) {
+      return createdSubscriber.subscriberId;
     } else {
       throw new HttpException(
         'Error creating subscriber.',
