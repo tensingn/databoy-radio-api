@@ -20,6 +20,7 @@ export class SubscribersService {
     private subscriberRepository: Repository<Subscriber>,
   ) {}
 
+  // create new sub
   async create(createSubscriberDto: CreateSubscriberDto) {
     let subscriber = this.subscriberRepository.create({
       email: createSubscriberDto.email,
