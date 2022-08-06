@@ -11,16 +11,19 @@ export class ProductsService {
   ) {}
 
   findAll() {
-    return this.productRepository.find({ relations: ['images'] });
+    return this.productRepository.find({ relations: ['images', 'sizes'] });
   }
 
-  async findOne(productId: number) {
+  async findOne(productId: number, snipcart: boolean = false) {
     let product = await this.productRepository.findOne(productId, {
-      relations: ['images'],
+      relations: ['images', 'sizes'],
     });
-    console.log(product);
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (snipcart) {
+      product.id = product.productId;
     }
 
     return product;

@@ -17,6 +17,9 @@ export class Product {
   @PrimaryGeneratedColumn()
   productId: number;
 
+  // used by snipcart
+  id: number;
+
   @Column()
   name: string;
 

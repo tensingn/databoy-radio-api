@@ -21,4 +21,11 @@ export class ProductsController {
   async findOne(@Param('productId') productId: number): Promise<Product> {
     return this.productsService.findOne(+productId);
   }
+
+  @Get('snipcart/:productId')
+  async findOneSnipCart(
+    @Param('productId') productId: number,
+  ): Promise<Product> {
+    return this.productsService.findOne(+productId, true);
+  }
 }
