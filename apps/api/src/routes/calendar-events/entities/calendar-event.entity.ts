@@ -21,8 +21,14 @@ export class CalendarEvent {
   @Column()
   endTime: Date;
 
-  @Column({ length: 1000 })
+  @Column('tinytext')
   description: string;
+
+  @Column('text')
+  longDescription: string;
+
+  @Column({ length: 2048 })
+  descriptionImageUrl: string;
 
   @ManyToOne(() => CalendarEventType, (type) => type.calendarEvents)
   @JoinColumn({ name: 'calendarEventTypeId' })
