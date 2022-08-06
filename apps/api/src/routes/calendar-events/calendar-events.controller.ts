@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CalendarEventsService } from './calendar-events.service';
+import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
 
 @Controller('api/calendar-events')
 export class CalendarEventsController {
@@ -13,5 +14,10 @@ export class CalendarEventsController {
   @Get(':calendarEventId')
   findOne(@Param('calendarEventId') calendarEventId: number) {
     return this.calendarEventsService.findOne(+calendarEventId);
+  }
+
+  @Post()
+  createCalendarEvent(@Body() body: CreateCalendarEventDto) {
+    return this.calendarEventsService.createCalendarEvent(body);
   }
 }

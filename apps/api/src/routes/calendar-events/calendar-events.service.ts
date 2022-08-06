@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { DateService } from '../../services/date/date.service';
+import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
+import { CalendarEventType } from './entities/calendar-event-type.entity';
 import { CalendarEvent } from './entities/calendar-event.entity';
 
 @Injectable()
@@ -9,6 +11,8 @@ export class CalendarEventsService {
   constructor(
     @InjectRepository(CalendarEvent)
     private calendarEventRepository: Repository<CalendarEvent>,
+    @InjectRepository(CalendarEventType)
+    private calendarEventTypeRepository: Repository<CalendarEventType>,
     private dateService: DateService,
   ) {}
 
@@ -49,5 +53,32 @@ export class CalendarEventsService {
     }
 
     return calendarEvent;
+  }
+
+  async createCalendarEvent(body: CreateCalendarEventDto) {
+    let calendarEventType = await this.calendarEventTypeRepository.findOne(
+      body.calendarEventTypeId,
+    );
+
+    if (!calendarEventType) {
+      throw new HttpException(
+        'CalendarEventType with this Id does not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let calendarEvent = this.calendarEventRepository.create({
+      calendarEventType,
+      ...body,
+    });
+
+    if (await this.calendarEventRepository.save(calendarEvent)) {
+      return;
+    } else {
+      throw new HttpException(
+        'Error creating calendar event.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
