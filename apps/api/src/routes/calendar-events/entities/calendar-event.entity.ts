@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CalendarEventType } from './calendar-event-type.entity';
+import { CalendarEventLocation } from './calendar-event-location.entity';
 
 @Entity()
 export class CalendarEvent {
@@ -33,4 +34,8 @@ export class CalendarEvent {
   @ManyToOne(() => CalendarEventType, (type) => type.calendarEvents)
   @JoinColumn({ name: 'calendarEventTypeId' })
   calendarEventType: CalendarEventType;
+
+  @ManyToOne(() => CalendarEventLocation, (location) => location.calendarEvents)
+  @JoinColumn({ name: 'calendarEventLocationId' })
+  location: CalendarEventLocation;
 }

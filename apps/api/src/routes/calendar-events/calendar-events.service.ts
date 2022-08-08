@@ -19,7 +19,7 @@ export class CalendarEventsService {
   findAll(daysAgo: number) {
     if (daysAgo == null) {
       return this.calendarEventRepository.find({
-        relations: ['calendarEventType'],
+        relations: ['calendarEventType', 'location'],
         order: {
           startTime: 'ASC',
         },
@@ -27,7 +27,7 @@ export class CalendarEventsService {
     } else {
       let date: Date = this.dateService.daysAgoNoTime(daysAgo);
       return this.calendarEventRepository.find({
-        relations: ['calendarEventType'],
+        relations: ['calendarEventType', 'location'],
         where: {
           startTime: MoreThanOrEqual(date),
         },
@@ -42,7 +42,7 @@ export class CalendarEventsService {
     let calendarEvent = await this.calendarEventRepository.findOne(
       calendarEventId,
       {
-        relations: ['calendarEventType'],
+        relations: ['calendarEventType', 'location'],
       },
     );
     if (!calendarEvent) {
