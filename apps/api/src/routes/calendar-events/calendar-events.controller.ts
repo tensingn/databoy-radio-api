@@ -22,14 +22,25 @@ export class CalendarEventsController {
     return this.calendarEventsService.createCalendarEvent(body);
   }
 
-  @Post(':calendarEventId/subscription')
-  createCalendrEventSubscription(
+  @Post(':calendarEventId/subscriber')
+  createCalendarEventSubscription(
     @Param('calendarEventId') calendarEventId: number,
     @Body() body: CreateCalendarEventSubscriptionDto,
   ) {
     return this.calendarEventsService.createCalendarEventSubscription(
-      calendarEventId,
+      +calendarEventId,
       body,
+    );
+  }
+
+  @Get(':calendarEventId/subscriber/:subscriberId')
+  getCalendarEventSubscription(
+    @Param('calendarEventId') calendarEventId: number,
+    @Param('subscriberId') subscriberId: number,
+  ) {
+    return this.calendarEventsService.findCalendarEventSubscription(
+      +calendarEventId,
+      +subscriberId,
     );
   }
 }

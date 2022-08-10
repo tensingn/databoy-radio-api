@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { GetCalendarEventSubscriptionDto } from '../dto/get-calendar-event-subscription.dto';
 import { GetCalendarEventDto } from '../dto/get-calendar-event.dto';
+import { CalendarEventSubscription } from '../entities/calendar-event-subscription.entity';
 import { CalendarEvent } from '../entities/calendar-event.entity';
 
 @Injectable()
@@ -25,5 +27,11 @@ export class CalendarEventMapperService {
     });
 
     return dtos;
+  }
+
+  calendarEventSubscriptionToCalendarEventSubscriptionDto(
+    calendarEventSubscription: CalendarEventSubscription,
+  ): GetCalendarEventSubscriptionDto {
+    return { isGoing: calendarEventSubscription.isGoing };
   }
 }

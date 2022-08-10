@@ -137,6 +137,33 @@ export class CalendarEventsService {
     }
   }
 
+  async findCalendarEventSubscription(
+    calendarEventId: number,
+    subscriberId: number,
+  ) {
+    let calendarEvent = await this._findOne(calendarEventId);
+    let subscriber = await this.subscribersService.findOne(subscriberId);
+    if (!subscriber) {
+      throw new HttpException('Subscriber not found', HttpStatus.NOT_FOUND);
+    }
+
+    let subscription = await this._findCalendarEventSubscription(
+      calendarEvent,
+      subscriberId,
+    );
+
+    if (!subscription) {
+      throw new HttpException(
+        'Subscriber not subscribed to Calendar Event',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.calendarEventMapper.calendarEventSubscriptionToCalendarEventSubscriptionDto(
+      subscription,
+    );
+  }
+
   private async _findOne(calendarEventId: number) {
     let calendarEvent = await this.calendarEventRepository.findOne(
       calendarEventId,
