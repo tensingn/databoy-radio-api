@@ -1,4 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CalendarEventSubscription } from '../../calendar-events/entities/calendar-event-subscription.entity';
+import { CalendarEvent } from '../../calendar-events/entities/calendar-event.entity';
 import { MixLike } from '../../mixes/entities/mix-like.entity';
 import { ReleaseLike } from '../../releases/entities/release-like.entity';
 
@@ -15,4 +23,10 @@ export class Subscriber {
 
   @OneToMany(() => MixLike, (mixLike) => mixLike.subscriber)
   mixLikes: MixLike[];
+
+  @OneToMany(
+    () => CalendarEventSubscription,
+    (calendarEventSubscription) => calendarEventSubscription.subscriber,
+  )
+  calendarEventSubscriptions: CalendarEventSubscription[];
 }
