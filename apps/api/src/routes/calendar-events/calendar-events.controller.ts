@@ -22,7 +22,7 @@ export class CalendarEventsController {
     return this.calendarEventsService.createCalendarEvent(body);
   }
 
-  @Post(':calendarEventId/subscriber')
+  @Post(':calendarEventId/subscribers')
   createCalendarEventSubscription(
     @Param('calendarEventId') calendarEventId: number,
     @Body() body: CreateCalendarEventSubscriptionDto,
@@ -33,7 +33,7 @@ export class CalendarEventsController {
     );
   }
 
-  @Get(':calendarEventId/subscriber/:subscriberId')
+  @Get(':calendarEventId/subscribers/:subscriberId')
   getCalendarEventSubscription(
     @Param('calendarEventId') calendarEventId: number,
     @Param('subscriberId') subscriberId: number,
