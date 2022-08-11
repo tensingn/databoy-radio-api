@@ -26,6 +26,8 @@ import { CalendarEventType } from './routes/calendar-events/entities/calendar-ev
 import { MixLike } from './routes/mixes/entities/mix-like.entity';
 import { ReleaseLike } from './routes/releases/entities/release-like.entity';
 import { Subscriber } from './routes/subscribers/entities/subscriber.entity';
+import { CalendarEventLocation } from './routes/calendar-events/entities/calendar-event-location.entity';
+import { CalendarEventSubscription } from './routes/calendar-events/entities/calendar-event-subscription.entity';
 
 @Module({
   imports: [
@@ -44,7 +46,9 @@ import { Subscriber } from './routes/subscribers/entities/subscriber.entity';
         Mix,
         Release,
         CalendarEvent,
+        CalendarEventLocation,
         CalendarEventType,
+        CalendarEventSubscription,
         MixLike,
         ReleaseLike,
         Subscriber,

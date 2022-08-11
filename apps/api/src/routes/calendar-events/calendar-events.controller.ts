@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CalendarEventsService } from './calendar-events.service';
 import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
+import { CreateCalendarEventSubscriptionDto } from './dto/create-calendar-event-subscriber';
 
 @Controller('api/calendar-events')
 export class CalendarEventsController {
@@ -19,5 +20,27 @@ export class CalendarEventsController {
   @Post()
   createCalendarEvent(@Body() body: CreateCalendarEventDto) {
     return this.calendarEventsService.createCalendarEvent(body);
+  }
+
+  @Post(':calendarEventId/subscribers')
+  createCalendarEventSubscription(
+    @Param('calendarEventId') calendarEventId: number,
+    @Body() body: CreateCalendarEventSubscriptionDto,
+  ) {
+    return this.calendarEventsService.createCalendarEventSubscription(
+      +calendarEventId,
+      body,
+    );
+  }
+
+  @Get(':calendarEventId/subscribers/:subscriberId')
+  getCalendarEventSubscription(
+    @Param('calendarEventId') calendarEventId: number,
+    @Param('subscriberId') subscriberId: number,
+  ) {
+    return this.calendarEventsService.findCalendarEventSubscription(
+      +calendarEventId,
+      +subscriberId,
+    );
   }
 }

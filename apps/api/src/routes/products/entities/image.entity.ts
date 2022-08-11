@@ -12,7 +12,7 @@ export class Image {
   @PrimaryGeneratedColumn()
   imageId: number;
 
-  @Column()
+  @Column({ length: 2048 })
   url: string;
 
   @ManyToOne(() => Product, (product) => product.images)
