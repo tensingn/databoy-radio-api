@@ -22,6 +22,17 @@ export class SubscribersService {
 
   // create new sub
   async create(createSubscriberDto: CreateSubscriberDto) {
+    if (
+      await this.subscriberRepository.findOne({
+        email: createSubscriberDto.email,
+      })
+    ) {
+      throw new HttpException(
+        'Subscriber with this email already exists.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     let subscriber = this.subscriberRepository.create({
       email: createSubscriberDto.email,
     });
@@ -49,8 +60,8 @@ export class SubscribersService {
     throw new NotImplementedException('Update subscriber not yet implemented');
   }
 
-  remove(subscriberId: number) {
-    throw new NotImplementedException('Remove subscriber not yet implemented');
+  async remove(subscriberId: number) {
+    return await this.subscriberRepository.delete(subscriberId);
   }
 
   async getAllMixesLikedBySubscriber(subscriberId: number) {
