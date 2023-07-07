@@ -26,12 +26,13 @@ import { CalendarEventType } from './routes/calendar-events/entities/calendar-ev
 import { MixLike } from './routes/mixes/entities/mix-like.entity';
 import { ReleaseLike } from './routes/releases/entities/release-like.entity';
 import { Subscriber } from './routes/subscribers/entities/subscriber.entity';
-import { CalendarEventLocation } from './routes/calendar-events/entities/calendar-event-location.entity';
-import { CalendarEventSubscription } from './routes/calendar-events/entities/calendar-event-subscription.entity';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+      supportBigNumbers: true,
+      bigNumberStrings: false,
       type: 'mysql',
       host: process.env.DB_HOST,
       port: 3306,
@@ -61,6 +62,7 @@ import { CalendarEventSubscription } from './routes/calendar-events/entities/cal
     ReleasesModule,
     CalendarEventsModule,
     SubscribersModule,
+    AuthorizationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
