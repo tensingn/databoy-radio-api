@@ -15,7 +15,8 @@ export class ProductsService {
   }
 
   async findOne(productId: number, snipcart: boolean = false) {
-    let product = await this.productRepository.findOne(productId, {
+    let product: Product = await this.productRepository.findOne(productId, {
+      select: ['price'],
       relations: ['images', 'sizes'],
     });
     if (!product) {
