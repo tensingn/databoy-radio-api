@@ -9,19 +9,25 @@ import {
 } from '@nestjs/common';
 import { CreateMixLikeDto } from './dto/create-mix-like.dto';
 import { MixesService } from './mixes.service';
+import { CreateMixDto } from './dto/create-mix.dto';
 
 @Controller('api/mixes')
 export class MixesController {
   constructor(private readonly mixesService: MixesService) {}
 
+  @Post()
+  create(@Body() createMixDto: CreateMixDto) {
+    return this.mixesService.create(createMixDto);
+  }
+
   @Get()
-  findAll(@Query('subscriberId') subscriberId: number) {
-    return this.mixesService.findAll(subscriberId);
+  getAll(@Query('subscriberId') subscriberId: number) {
+    return this.mixesService.getAll(subscriberId);
   }
 
   @Get(':mixId')
-  findOne(@Param('mixId') mixId: number) {
-    return this.mixesService.findOne(+mixId);
+  getOne(@Param('mixId') mixId: number) {
+    return this.mixesService.getOne(+mixId);
   }
 
   @Post(':mixId/likes')

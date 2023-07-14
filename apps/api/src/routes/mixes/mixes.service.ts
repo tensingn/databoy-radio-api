@@ -5,6 +5,10 @@ import { SubscribersService } from '../subscribers/subscribers.service';
 import { MixLike } from './entities/mix-like.entity';
 import { Mix } from './entities/mix.entity';
 import { MixMapperService } from './services/mix-mapper.service';
+import { CreateMixDto } from './dto/create-mix.dto';
+import { Release } from '../releases/entities/release.entity';
+import { ReleasesService } from '../releases/releases.service';
+import { Subscriber } from '../subscribers/entities/subscriber.entity';
 
 @Injectable()
 export class MixesService {
@@ -13,13 +17,37 @@ export class MixesService {
     private mixRepository: Repository<Mix>,
     @InjectRepository(MixLike)
     private mixLikeRepository: Repository<MixLike>,
+    @InjectRepository(Release)
+    private releaseRepository: Repository<Release>,
     @Inject(MixMapperService)
     private mixMapper: MixMapperService,
     @Inject(SubscribersService)
     private subscribersService: SubscribersService,
   ) {}
 
-  async findAll(subscriberId: number) {
+  async create(createMixDto: CreateMixDto): Promise<number> {
+    let release = createMixDto.releaseId
+      ? await this.releaseRepository.findOne(createMixDto.releaseId)
+      : null;
+
+    let mix: Mix = this.mixRepository.create({
+      title: createMixDto.title,
+      release: release,
+      src: createMixDto.src,
+    });
+
+    let createdMix = await this.mixRepository.save(mix);
+    if (createdMix) {
+      return createdMix.mixId;
+    } else {
+      throw new HttpException(
+        'Error creating mix.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getAll(subscriberId: number) {
     if (subscriberId == null) {
       let mixes = await this.mixRepository.find({
         relations: ['release', 'likes'],
@@ -39,10 +67,14 @@ export class MixesService {
     }
   }
 
-  async findOne(mixId: number) {
-    let mix = await this._findOne(mixId);
+  async getOne(mixId: number) {
+    let mix = await this.findOne(mixId);
 
     return this.mixMapper.mixToGetMixDto(mix);
+  }
+
+  async findOne(mixId: number) {
+    return await this._findOne(mixId);
   }
 
   async createMixLike(mixId: number, subscriberId: number) {
