@@ -8,6 +8,8 @@ import { SubscribersService } from '../subscribers/subscribers.service';
 import { ReleaseLike } from './entities/release-like.entity';
 import { Release } from './entities/release.entity';
 import { ReleaseMapperService } from './services/release-mapper.service';
+import { CreateReleaseDto } from './dto/create-release.dto';
+import { GetReleaseDto } from './dto/get-release.dto';
 
 @Injectable()
 export class ReleasesService {
@@ -24,7 +26,24 @@ export class ReleasesService {
     private subscribersService: SubscribersService,
   ) {}
 
-  async findAll(subscriberId: number) {
+  async create(createReleaseDto: CreateReleaseDto): Promise<number> {
+    let release: Release = this.releaseRepository.create({
+      title: createReleaseDto.title,
+      releaseDate: createReleaseDto.releaseDate,
+    });
+
+    let createdRelease = await this.releaseRepository.save(release);
+    if (createdRelease) {
+      return createdRelease.releaseId;
+    } else {
+      throw new HttpException(
+        'Error creating release.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getAll(subscriberId: number): Promise<GetReleaseDto[]> {
     if (subscriberId != null) {
       let releases = await this.releaseRepository.find({
         relations: ['likes', 'likes.subscriber'],
@@ -45,7 +64,7 @@ export class ReleasesService {
     }
   }
 
-  async findOne(releaseId: number, subscriberId: number) {
+  async getOne(releaseId: number, subscriberId?: number) {
     let release = await this._findOne(releaseId);
 
     // if a subscriberId is passed in, then we need to add like data to the returned release
@@ -124,6 +143,10 @@ export class ReleasesService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async findOne(releaseId: number) {
+    return await this._findOne(releaseId);
   }
 
   private async _findOne(releaseId: number) {

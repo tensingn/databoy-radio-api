@@ -9,22 +9,28 @@ import {
 } from '@nestjs/common';
 import { CreateReleaseLikeDto } from './dto/create-release-like.dto';
 import { ReleasesService } from './releases.service';
+import { CreateReleaseDto } from './dto/create-release.dto';
 
 @Controller('api/releases')
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
+  @Post()
+  create(@Body() body: CreateReleaseDto) {
+    return this.releasesService.create(body);
+  }
+
   @Get()
-  findAll(@Query('subscriberId') subscriberId: number) {
-    return this.releasesService.findAll(subscriberId);
+  getAll(@Query('subscriberId') subscriberId: number) {
+    return this.releasesService.getAll(subscriberId);
   }
 
   @Get(':releaseId')
-  findOne(
+  getOne(
     @Param('releaseId') releaseId: number,
     @Query('subscriberId') subscriberId: number,
   ) {
-    return this.releasesService.findOne(+releaseId, subscriberId);
+    return this.releasesService.getOne(+releaseId, subscriberId);
   }
 
   @Post(':releaseId/likes')
