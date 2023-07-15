@@ -69,7 +69,7 @@ export class CalendarEventsService {
     return calendarEvent;
   }
 
-  async createCalendarEvent(body: CreateCalendarEventDto) {
+  async createCalendarEvent(body: CreateCalendarEventDto): Promise<number> {
     let calendarEventType = await this.calendarEventTypeRepository.findOne(
       body.calendarEventTypeId,
     );
@@ -86,8 +86,12 @@ export class CalendarEventsService {
       ...body,
     });
 
-    if (await this.calendarEventRepository.save(calendarEvent)) {
-      return;
+    let createdCalendarEvent = await this.calendarEventRepository.save(
+      calendarEvent,
+    );
+
+    if (createdCalendarEvent) {
+      return createdCalendarEvent.calendarEventId;
     } else {
       throw new HttpException(
         'Error creating calendar event.',
