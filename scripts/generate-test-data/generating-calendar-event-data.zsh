@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-echo "Generating test release data..."
+echo "Generating test calendar event data..."
 source .env
 
 baseUrl="http://localhost:$PORT/api"
