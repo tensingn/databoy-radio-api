@@ -18,6 +18,8 @@ export class CalendarEventsController {
   constructor(private readonly calendarEventsService: CalendarEventsService) {}
 
   @Get()
+  @UseGuards(AuthorizationGuard, PermissionsGuard)
+  @Permissions('read:calendar_events')
   findAll(@Query('daysAgo') daysAgo: number) {
     return this.calendarEventsService.findAll(daysAgo);
   }
