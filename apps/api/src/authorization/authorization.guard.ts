@@ -9,6 +9,7 @@ import { expressJwtSecret } from 'jwks-rsa';
 import { promisify } from 'util';
 import { expressjwt as jwt, GetVerificationKey } from 'express-jwt';
 import 'dotenv/config';
+import { IncomingMessage } from 'http';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
@@ -16,7 +17,7 @@ export class AuthorizationGuard implements CanActivate {
   private AUTH0_DOMAIN: string = process.env.AUTH0_DOMAIN;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.getArgByIndex(0);
+    const req: IncomingMessage = context.getArgByIndex(0);
     const res = context.getArgByIndex(1);
 
     const checkJwt = promisify(
@@ -34,7 +35,7 @@ export class AuthorizationGuard implements CanActivate {
     );
 
     try {
-      await checkJwt(req, res);
+      await checkJwt(req as any, res);
       return true;
     } catch (err) {
       throw new UnauthorizedException(err);
