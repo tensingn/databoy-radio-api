@@ -1,5 +1,6 @@
 import {
   CollectionReference,
+  DocumentReference,
   DocumentSnapshot,
   Firestore,
   OrderByDirection,
@@ -10,6 +11,7 @@ import {
 import { Inject, Injectable } from '@nestjs/common';
 import { FIRESTORE_OPTIONS } from './firestore.module';
 import { User } from '../../routes/users/entities/user.entity';
+import { Doc } from 'prettier';
 
 @Injectable()
 export class FirestoreService {
@@ -20,95 +22,132 @@ export class FirestoreService {
     this.db = new Firestore(this.options);
   }
 
-  last: DocumentSnapshot = null;
-
   async getUsers(): Promise<Array<User>> {
-    const { values, last } = await this.getCollection<User>(this.USERS, {
+    const users = await this.getCollection<User, string>(this.USERS, {
       // whereOptions: {
-      //   key: 'username',
-      //   value: 'khari',
+      //   key: 'type',
+      //   value: 'admin',
       //   operation: '==',
+      //   pagingOptions: {
+      //     startAfter: '',
+      //     limit: 1,
+      //   },
       // },
       orderOptions: {
         field: 'username',
         direction: 'asc',
-      },
-      pagingOptions: {
-        startAfter: this.last,
-        limit: 1,
+        pagingOptions: {
+          startAfter: 'khari',
+          limit: 2,
+        },
       },
     });
-    this.last = last;
+
+    return users;
+  }
+
+  private async getSingle<T>(collectionName: string, id: string): Promise<T> {
+    return (await this.getDocumentSnapshot(collectionName, id)).data() as T;
+  }
+
+  private async getDocumentSnapshot(
+    collectionName: string,
+    id: string,
+  ): Promise<DocumentSnapshot> {
+    const docRef = this.db.collection(collectionName).doc(id);
+    return docRef.get();
+  }
+
+  private async getCollection<T, TField>(
+    collectionName: string,
+    options: QueryOptions<TField> = null,
+  ): Promise<Array<T>> {
+    const ref = await this.assembleQuery(collectionName, options);
+
+    const docs = (await ref.get()).docs;
+    const values = docs.map((doc) => doc.data() as T);
 
     return values;
   }
 
-  private async getSingle<T>(collectionName: string, id: string): Promise<T> {
-    const docRef = this.db.collection(collectionName).doc(id);
-    const obj: T = (await docRef.get()).data() as T;
-    return obj;
-  }
-
-  private async getCollection<T>(
+  private async assembleQuery<TField>(
     collectionName: string,
-    options: QueryOptions = null,
-  ): Promise<GetResponse<Array<T>>> {
+    options: QueryOptions<TField>,
+  ): Promise<CollectionReference | Query> {
+    if (options?.whereOptions && options.orderOptions) {
+      throw new Error(
+        "Can't use WhereOptions and OrderOptions in the same query.",
+      );
+    }
+
     let ref: CollectionReference | Query = this.db.collection(collectionName);
 
     if (options?.whereOptions) {
+      const whereOptions = options.whereOptions;
+      const pagingOptions = whereOptions.pagingOptions;
+
+      if (!pagingOptions) throw new Error('PagingOptions are required.');
+
+      const last = pagingOptions.startAfter
+        ? await this.getDocumentSnapshot(
+            collectionName,
+            pagingOptions.startAfter,
+          )
+        : null;
+
       ref = ref.where(
-        options.whereOptions.key,
-        options.whereOptions.operation,
-        options.whereOptions.value,
+        whereOptions.key,
+        whereOptions.operation,
+        whereOptions.value,
       );
-    }
 
-    if (options?.orderOptions) {
-      ref = ref.orderBy(
-        options.orderOptions.field,
-        options.orderOptions.direction,
-      );
-    }
+      if (last) {
+        ref = ref.startAfter(last);
+      }
 
-    if (options?.pagingOptions) {
-      ref = ref
-        .startAfter(options.pagingOptions.startAfter)
-        .limit(options.pagingOptions.limit);
+      ref = ref.limit(pagingOptions.limit);
+    } else if (options?.orderOptions) {
+      const orderOptions = options.orderOptions;
+      const pagingOptions = orderOptions.pagingOptions;
+
+      if (!pagingOptions) {
+        throw new Error('PagingOptions are required.');
+      }
+
+      ref = ref.orderBy(orderOptions.field, orderOptions.direction);
+
+      if (pagingOptions.startAfter) {
+        ref = ref.startAfter(pagingOptions.startAfter);
+      }
+
+      ref = ref.limit(pagingOptions.limit);
     } else {
-      ref = ref.limit(10);
+      ref = ref.orderBy('id', 'asc').limit(10);
     }
 
-    const docs = (await ref.get()).docs;
-    const values = docs.map((doc) => doc.data() as T);
-    const last = docs[docs.length - 1];
-
-    return { values, last };
+    return ref;
   }
 }
 
-type QueryOptions = {
-  whereOptions?: WhereOptions;
-  orderOptions?: OrderOptions;
-  pagingOptions?: PagingOptions;
+type QueryOptions<TField> = {
+  whereOptions?: WhereOptions<TField>;
+  orderOptions?: OrderOptions<TField>;
 };
 
-type WhereOptions = {
+type WhereOptions<TField> = {
   key: string;
-  value: any;
+  value: TField;
   operation: WhereFilterOp;
+  pagingOptions: PagingOptions<string>;
 };
 
-type OrderOptions = {
+type OrderOptions<TField> = {
   field: string;
   direction: OrderByDirection;
+  pagingOptions: PagingOptions<TField>;
 };
 
-type PagingOptions = {
-  startAfter: DocumentSnapshot;
+type PagingOptions<T> = {
+  startAfter: T;
   limit: number;
-};
-
-type GetResponse<T> = {
-  values: T;
-  last: DocumentSnapshot;
 };
