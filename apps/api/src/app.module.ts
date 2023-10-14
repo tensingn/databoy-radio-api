@@ -3,9 +3,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-// 3rd party modules
-import { TypeOrmModule } from '@nestjs/typeorm';
-
 // our modules
 import { ProductsModule } from './routes/products/products.module';
 import { CartItemsModule } from './routes/cart-items/cart-items.module';
@@ -27,35 +24,11 @@ import { MixLike } from './routes/mixes/entities/mix-like.entity';
 import { ReleaseLike } from './routes/releases/entities/release-like.entity';
 import { Subscriber } from './routes/subscribers/entities/subscriber.entity';
 import { AuthorizationModule } from './authorization/authorization.module';
+import { UsersModule } from './routes/users/users.module';
+import { FirestoreModule } from './services/firestore/firestore.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      supportBigNumbers: true,
-      bigNumberStrings: false,
-      type: 'mysql',
-      host: process.env.DB_HOST,
-      port: 3306,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_DB,
-      entities: [
-        Product,
-        Image,
-        Size,
-        CartItem,
-        Mix,
-        Release,
-        CalendarEvent,
-        CalendarEventLocation,
-        CalendarEventType,
-        CalendarEventSubscription,
-        MixLike,
-        ReleaseLike,
-        Subscriber,
-      ],
-      synchronize: true,
-    }),
     ProductsModule,
     CartItemsModule,
     MixesModule,
@@ -63,6 +36,12 @@ import { AuthorizationModule } from './authorization/authorization.module';
     CalendarEventsModule,
     SubscribersModule,
     AuthorizationModule,
+    UsersModule,
+    FirestoreModule.register({
+      projectId: process.env.GCP_PROJECTID,
+      keyFilename: process.env.GCP_KEYFILENAME,
+      ignoreUndefinedProperties: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

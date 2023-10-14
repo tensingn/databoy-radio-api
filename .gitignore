@@ -39,3 +39,4 @@ lerna-debug.log*
 
 generated-files/
 test-data/
+key.json
