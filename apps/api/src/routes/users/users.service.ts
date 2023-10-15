@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FirestoreService } from '../../services/firestore/firestore.service';
+import {
+  FirestoreService,
+  PagingOptions,
+} from '../../services/database/firestore/firestore.service';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -15,8 +18,18 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  findAll(): Promise<Array<User>> {
-    return this.firestoreService.getUsers();
+  async findAll(startAfter: string, limit: number): Promise<Array<User>> {
+    const users = await this.firestoreService.getCollection<User>(
+      {
+        pagingOptions: {
+          startAfter,
+          limit,
+        },
+      },
+      User,
+    );
+
+    return users;
   }
 
   findOne(id: number) {

@@ -25,7 +25,7 @@ import { ReleaseLike } from './routes/releases/entities/release-like.entity';
 import { Subscriber } from './routes/subscribers/entities/subscriber.entity';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { UsersModule } from './routes/users/users.module';
-import { FirestoreModule } from './services/firestore/firestore.module';
+import { FirestoreModule } from './services/database/firestore/firestore.module';
 
 @Module({
   imports: [
