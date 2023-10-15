@@ -1,6 +1,5 @@
 import {
   CollectionReference,
-  DocumentReference,
   DocumentSnapshot,
   Firestore,
   OrderByDirection,
@@ -8,10 +7,8 @@ import {
   Settings,
   WhereFilterOp,
 } from '@google-cloud/firestore';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Type } from '@nestjs/common';
 import { FIRESTORE_OPTIONS } from './firestore.module';
-import { User } from '../../routes/users/entities/user.entity';
-import { Doc } from 'prettier';
 
 @Injectable()
 export class FirestoreService {
@@ -22,31 +19,44 @@ export class FirestoreService {
     this.db = new Firestore(this.options);
   }
 
-  async getUsers(): Promise<Array<User>> {
-    const users = await this.getCollection<User, string>(this.USERS, {
-      // whereOptions: {
-      //   key: 'type',
-      //   value: 'admin',
-      //   operation: '==',
-      //   pagingOptions: {
-      //     startAfter: '',
-      //     limit: 1,
-      //   },
-      // },
-      orderOptions: {
-        field: 'username',
-        direction: 'asc',
-        pagingOptions: {
-          startAfter: 'khari',
-          limit: 2,
-        },
-      },
-    });
+  async getCollection<T extends Object, TField = string>(
+    options: QueryOptions<TField>,
+    type: Type,
+  ): Promise<Array<T>> {
+    const values = await this.getCollectionFromDB<T, TField>(
+      this.USERS,
+      options,
+    );
 
-    return users;
+    const returnArray = new Array();
+    values.forEach((value) => {
+      returnArray.push(Object.assign(new type.prototype.constructor(), value));
+    });
+    return returnArray;
   }
 
-  private async getSingle<T>(collectionName: string, id: string): Promise<T> {
+  async getSingle<T>(id: string, type: Type): Promise<T> {
+    const value = this.getSingleFromDB<T>(this.USERS, id);
+
+    return Object.assign(new type.prototype.constructor(), value);
+  }
+
+  private async getCollectionFromDB<T, TField = string>(
+    collectionName: string,
+    options: QueryOptions<TField> = null,
+  ): Promise<Array<T>> {
+    const ref = await this.assembleQuery<TField>(collectionName, options);
+
+    const docs = (await ref.get()).docs;
+    const values = docs.map((doc) => doc.data() as T);
+
+    return values;
+  }
+
+  private async getSingleFromDB<T>(
+    collectionName: string,
+    id: string,
+  ): Promise<T> {
     return (await this.getDocumentSnapshot(collectionName, id)).data() as T;
   }
 
@@ -58,19 +68,7 @@ export class FirestoreService {
     return docRef.get();
   }
 
-  private async getCollection<T, TField>(
-    collectionName: string,
-    options: QueryOptions<TField> = null,
-  ): Promise<Array<T>> {
-    const ref = await this.assembleQuery(collectionName, options);
-
-    const docs = (await ref.get()).docs;
-    const values = docs.map((doc) => doc.data() as T);
-
-    return values;
-  }
-
-  private async assembleQuery<TField>(
+  private async assembleQuery<TField = string>(
     collectionName: string,
     options: QueryOptions<TField>,
   ): Promise<CollectionReference | Query> {
@@ -121,6 +119,14 @@ export class FirestoreService {
       }
 
       ref = ref.limit(pagingOptions.limit);
+    } else if (options.pagingOptions) {
+      const pagingOptions = options.pagingOptions;
+
+      if (pagingOptions.startAfter) {
+        ref = ref.startAfter(pagingOptions.startAfter);
+      }
+
+      ref = ref.limit(pagingOptions.limit);
     } else {
       ref = ref.orderBy('id', 'asc').limit(10);
     }
@@ -129,25 +135,26 @@ export class FirestoreService {
   }
 }
 
-type QueryOptions<TField> = {
+export type QueryOptions<TField = string> = {
   whereOptions?: WhereOptions<TField>;
   orderOptions?: OrderOptions<TField>;
+  pagingOptions?: PagingOptions<TField>;
 };
 
-type WhereOptions<TField> = {
+export type WhereOptions<TField = string> = {
   key: string;
   value: TField;
   operation: WhereFilterOp;
   pagingOptions: PagingOptions<string>;
 };
 
-type OrderOptions<TField> = {
+export type OrderOptions<TField = string> = {
   field: string;
   direction: OrderByDirection;
   pagingOptions: PagingOptions<TField>;
 };
 
-type PagingOptions<T> = {
+export type PagingOptions<T = string> = {
   startAfter: T;
   limit: number;
 };

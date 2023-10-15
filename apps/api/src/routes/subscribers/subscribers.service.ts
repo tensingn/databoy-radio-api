@@ -11,7 +11,7 @@ import { Release } from '../releases/entities/release.entity';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { Subscriber } from './entities/subscriber.entity';
-import { FirestoreService } from '../../services/firestore/firestore.service';
+import { FirestoreService } from '../../services/database/firestore/firestore.service';
 
 @Injectable()
 export class SubscribersService {

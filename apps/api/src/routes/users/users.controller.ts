@@ -21,8 +21,8 @@ export class UsersController {
   }
 
   @Get()
-  async findAll() {
-    const users = await this.usersService.findAll();
+  async findAll(lastId: string, limit: number) {
+    const users = await this.usersService.findAll(lastId, limit);
     return users;
   }
 
