@@ -1,14 +1,17 @@
 import {
   CollectionReference,
   DocumentSnapshot,
+  FieldPath,
   Firestore,
   OrderByDirection,
   Query,
+  QueryDocumentSnapshot,
   Settings,
   WhereFilterOp,
 } from '@google-cloud/firestore';
 import { Inject, Injectable, Type } from '@nestjs/common';
 import { FIRESTORE_OPTIONS } from './firestore.module';
+import { DatabaseObject } from '../models/database-object.entity';
 
 @Injectable()
 export class FirestoreService {
@@ -19,18 +22,20 @@ export class FirestoreService {
     this.db = new Firestore(this.options);
   }
 
-  async getCollection<T extends Object, TField = string>(
+  async getCollection<T extends DatabaseObject, TField = string>(
     options: QueryOptions<TField>,
     type: Type,
   ): Promise<Array<T>> {
-    const values = await this.getCollectionFromDB<T, TField>(
-      this.USERS,
-      options,
-    );
+    const docs = await this.getCollectionFromDB<TField>(this.USERS, options);
 
-    const returnArray = new Array();
-    values.forEach((value) => {
-      returnArray.push(Object.assign(new type.prototype.constructor(), value));
+    const returnArray = new Array<T>();
+    docs.forEach((doc) => {
+      const returnObj = Object.assign(
+        new type.prototype.constructor(),
+        doc.data(),
+      ) as T;
+      returnObj.id = doc.id;
+      returnArray.push(returnObj);
     });
     return returnArray;
   }
@@ -41,16 +46,13 @@ export class FirestoreService {
     return Object.assign(new type.prototype.constructor(), value);
   }
 
-  private async getCollectionFromDB<T, TField = string>(
+  private async getCollectionFromDB<TField = string>(
     collectionName: string,
     options: QueryOptions<TField> = null,
-  ): Promise<Array<T>> {
+  ): Promise<Array<QueryDocumentSnapshot>> {
     const ref = await this.assembleQuery<TField>(collectionName, options);
 
-    const docs = (await ref.get()).docs;
-    const values = docs.map((doc) => doc.data() as T);
-
-    return values;
+    return (await ref.get()).docs;
   }
 
   private async getSingleFromDB<T>(
@@ -94,7 +96,7 @@ export class FirestoreService {
         : null;
 
       ref = ref.where(
-        whereOptions.key,
+        whereOptions.field,
         whereOptions.operation,
         whereOptions.value,
       );
@@ -121,6 +123,7 @@ export class FirestoreService {
       ref = ref.limit(pagingOptions.limit);
     } else if (options.pagingOptions) {
       const pagingOptions = options.pagingOptions;
+      ref = ref.orderBy(FieldPath.documentId());
 
       if (pagingOptions.startAfter) {
         ref = ref.startAfter(pagingOptions.startAfter);
@@ -128,7 +131,7 @@ export class FirestoreService {
 
       ref = ref.limit(pagingOptions.limit);
     } else {
-      ref = ref.orderBy('id', 'asc').limit(10);
+      ref = ref.orderBy(FieldPath.documentId(), 'asc').limit(10);
     }
 
     return ref;
@@ -142,7 +145,7 @@ export type QueryOptions<TField = string> = {
 };
 
 export type WhereOptions<TField = string> = {
-  key: string;
+  field: string;
   value: TField;
   operation: WhereFilterOp;
   pagingOptions: PagingOptions<string>;

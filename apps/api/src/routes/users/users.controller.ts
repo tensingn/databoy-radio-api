@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { QueryOptions } from '../../services/database/firestore/firestore.service';
 
 @Controller('api/users')
 export class UsersController {
@@ -21,8 +22,8 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(lastId: string, limit: number) {
-    const users = await this.usersService.findAll(lastId, limit);
+  async findCollection(@Body() query: QueryOptions) {
+    const users = await this.usersService.findCollection(query);
     return users;
   }
 

@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import {
   FirestoreService,
   PagingOptions,
+  QueryOptions,
 } from '../../services/database/firestore/firestore.service';
 import { User } from './entities/user.entity';
 
@@ -18,16 +19,8 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  async findAll(startAfter: string, limit: number): Promise<Array<User>> {
-    const users = await this.firestoreService.getCollection<User>(
-      {
-        pagingOptions: {
-          startAfter,
-          limit,
-        },
-      },
-      User,
-    );
+  async findCollection(query: QueryOptions): Promise<Array<User>> {
+    const users = await this.firestoreService.getCollection<User>(query, User);
 
     return users;
   }
