@@ -11,7 +11,7 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject(FirestoreService)
+    @Inject('users')
     private firestoreService: FirestoreService,
   ) {}
 
@@ -25,8 +25,10 @@ export class UsersService {
     return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string): Promise<User> {
+    const user = await this.firestoreService.getSingle<User>(id, User);
+
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

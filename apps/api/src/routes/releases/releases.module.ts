@@ -11,11 +11,6 @@ import { Subscriber } from '../subscribers/entities/subscriber.entity';
 @Module({
   imports: [],
   controllers: [ReleasesController],
-  providers: [
-    ReleasesService,
-    ReleaseMapperService,
-    MixMapperService,
-    SubscribersService,
-  ],
+  providers: [ReleasesService, ReleaseMapperService, MixMapperService],
 })
 export class ReleasesModule {}

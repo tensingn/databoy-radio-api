@@ -12,12 +12,11 @@ import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { Subscriber } from './entities/subscriber.entity';
 import { FirestoreService } from '../../services/database/firestore/firestore.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class SubscribersService {
-  constructor(
-    @Inject(FirestoreService) private firestoreService: FirestoreService,
-  ) {}
+  constructor(@Inject('users') private firestoreService: FirestoreService) {}
 
   // create new sub
   async create(createSubscriberDto: CreateSubscriberDto) {
