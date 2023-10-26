@@ -37,7 +37,7 @@ import { FirestoreModule } from './services/database/firestore/firestore.module'
     SubscribersModule,
     AuthorizationModule,
     UsersModule,
-    FirestoreModule.register({
+    FirestoreModule.forRoot({
       projectId: process.env.GCP_PROJECTID,
       keyFilename: process.env.GCP_KEYFILENAME,
       ignoreUndefinedProperties: true,

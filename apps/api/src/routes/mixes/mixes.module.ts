@@ -11,6 +11,6 @@ import { Release } from '../releases/entities/release.entity';
 @Module({
   imports: [],
   controllers: [MixesController],
-  providers: [MixesService, MixMapperService, SubscribersService],
+  providers: [MixesService, MixMapperService],
 })
 export class MixesModule {}

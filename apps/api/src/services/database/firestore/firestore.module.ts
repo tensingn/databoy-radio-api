@@ -1,23 +1,32 @@
-import { Module, DynamicModule, Global } from '@nestjs/common';
+import { Module, DynamicModule, Global, Type } from '@nestjs/common';
 import { Settings } from '@google-cloud/firestore';
 import { FirestoreService } from './firestore.service';
+import {
+  FIRESTORE_OPTIONS,
+  FirestoreCoreModule,
+} from './firestore-core.module';
 
-export const FIRESTORE_OPTIONS = 'FIRESTORE_OPTIONS';
-
-@Global()
 @Module({})
 export class FirestoreModule {
-  static register(options: Settings): DynamicModule {
+  static forRoot(options: Settings): DynamicModule {
+    return {
+      module: FirestoreModule,
+      imports: [FirestoreCoreModule.forRoot(options)],
+    };
+  }
+
+  static forFeature(collectionName: string): DynamicModule {
     return {
       module: FirestoreModule,
       providers: [
         {
-          provide: FIRESTORE_OPTIONS,
-          useValue: options,
+          provide: collectionName,
+          useFactory: (options: Settings) =>
+            new FirestoreService(options, collectionName),
+          inject: [FIRESTORE_OPTIONS],
         },
-        FirestoreService,
       ],
-      exports: [FirestoreService],
+      exports: [collectionName],
     };
   }
 }

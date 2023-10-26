@@ -13,8 +13,6 @@ export class MixesService {
   constructor(
     @Inject(MixMapperService)
     private mixMapper: MixMapperService,
-    @Inject(SubscribersService)
-    private subscribersService: SubscribersService,
   ) {}
 
   async create(createMixDto: CreateMixDto): Promise<number> {

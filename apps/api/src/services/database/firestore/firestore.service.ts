@@ -10,15 +10,17 @@ import {
   WhereFilterOp,
 } from '@google-cloud/firestore';
 import { Inject, Injectable, Type } from '@nestjs/common';
-import { FIRESTORE_OPTIONS } from './firestore.module';
 import { DatabaseObject } from '../models/database-object.entity';
+import { FIRESTORE_OPTIONS } from './firestore-core.module';
 
 @Injectable()
 export class FirestoreService {
   private readonly db: Firestore;
-  private readonly USERS: string = 'users';
 
-  constructor(@Inject(FIRESTORE_OPTIONS) private options: Settings) {
+  constructor(
+    @Inject(FIRESTORE_OPTIONS) private options: Settings,
+    private readonly collectionName: string,
+  ) {
     this.db = new Firestore(this.options);
   }
 
@@ -26,7 +28,10 @@ export class FirestoreService {
     options: QueryOptions<TField>,
     type: Type,
   ): Promise<Array<T>> {
-    const docs = await this.getCollectionFromDB<TField>(this.USERS, options);
+    const docs = await this.getCollectionFromDB<TField>(
+      this.collectionName,
+      options,
+    );
 
     const returnArray = new Array<T>();
     docs.forEach((doc) => {
@@ -41,7 +46,7 @@ export class FirestoreService {
   }
 
   async getSingle<T>(id: string, type: Type): Promise<T> {
-    const value = this.getSingleFromDB<T>(this.USERS, id);
+    const value = await this.getSingleFromDB<T>(this.collectionName, id);
 
     return Object.assign(new type.prototype.constructor(), value);
   }
@@ -59,7 +64,10 @@ export class FirestoreService {
     collectionName: string,
     id: string,
   ): Promise<T> {
-    return (await this.getDocumentSnapshot(collectionName, id)).data() as T;
+    const doc = (
+      await this.getDocumentSnapshot(collectionName, id)
+    ).data() as T;
+    return doc;
   }
 
   private async getDocumentSnapshot(

@@ -15,8 +15,6 @@ export class ReleasesService {
     private releaseMapper: ReleaseMapperService,
     @Inject(MixMapperService)
     private mixMapper: MixMapperService,
-    @Inject(SubscribersService)
-    private subscribersService: SubscribersService,
   ) {}
 
   async create(createReleaseDto: CreateReleaseDto): Promise<number> {

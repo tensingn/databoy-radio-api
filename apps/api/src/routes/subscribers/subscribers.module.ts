@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SubscribersService } from './subscribers.service';
 import { SubscribersController } from './subscribers.controller';
-import { Subscriber } from './entities/subscriber.entity';
+import { FirestoreModule } from '../../services/database/firestore/firestore.module';
 
 @Module({
-  imports: [],
+  imports: [FirestoreModule.forFeature('users')],
   controllers: [SubscribersController],
   providers: [SubscribersService],
 })
