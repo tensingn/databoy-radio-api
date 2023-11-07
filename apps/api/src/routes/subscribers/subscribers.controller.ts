@@ -43,9 +43,9 @@ export class SubscribersController {
     return this.subscribersService.remove(+subscriberId);
   }
 
-  @Get(':subscriberId/mix-likes')
-  getAllMixLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
-    return this.subscribersService.getAllMixesLikedBySubscriber(subscriberId);
+  @Get(':subscriberId/track-likes')
+  getAllTrackLikesForSubscriber(@Param('subscriberId') subscriberId: number) {
+    return this.subscribersService.getAllTracksLikedBySubscriber(subscriberId);
   }
 
   @Get(':subscriberId/release-likes')

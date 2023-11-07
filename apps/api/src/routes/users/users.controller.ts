@@ -22,19 +22,18 @@ export class UsersController {
   }
 
   @Get()
-  async findCollection(@Body() query: QueryOptions) {
-    const users = await this.usersService.findCollection(query);
-    return users;
+  getCollection(@Body() query: QueryOptions) {
+    return this.usersService.getCollection(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  getOne(@Param('id') id: string) {
+    return this.usersService.getOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
