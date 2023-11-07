@@ -1,11 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateMixDto {
+export class CreateTrackDto {
   @IsNotEmpty()
   title: string;
 
   @IsNotEmpty()
   src: string;
-
-  releaseId: number;
 }

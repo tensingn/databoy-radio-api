@@ -24,9 +24,9 @@ export class FirestoreService {
     this.db = new Firestore(this.options);
   }
 
+  // public methods
   async getCollection<T extends DatabaseObject, TField = string>(
     options: QueryOptions<TField>,
-    type: Type,
   ): Promise<Array<T>> {
     const docs = await this.getCollectionFromDB<TField>(
       this.collectionName,
@@ -35,22 +35,49 @@ export class FirestoreService {
 
     const returnArray = new Array<T>();
     docs.forEach((doc) => {
-      const returnObj = Object.assign(
-        new type.prototype.constructor(),
-        doc.data(),
-      ) as T;
+      const returnObj = doc.data() as T;
       returnObj.id = doc.id;
       returnArray.push(returnObj);
     });
     return returnArray;
   }
 
-  async getSingle<T>(id: string, type: Type): Promise<T> {
-    const value = await this.getSingleFromDB<T>(this.collectionName, id);
-
-    return Object.assign(new type.prototype.constructor(), value);
+  getSingle<T>(id: string): Promise<T> {
+    return this.getSingleFromDB<T>(this.collectionName, id);
   }
 
+  async addSingle<T extends DatabaseObject>(object: T): Promise<T> {
+    const { id, ...saveObject } = object;
+    const res = await this.db.collection(this.collectionName).add(saveObject);
+
+    object.id = res.id;
+
+    return object;
+  }
+
+  async updateSingle(
+    id: string,
+    partialObject: Object,
+    saveType: Type,
+  ): Promise<Object> {
+    const partialObjectProps = Object.getOwnPropertyNames(partialObject);
+    const saveObjectProps = Object.getOwnPropertyNames(
+      new saveType.prototype.constructor(),
+    );
+
+    const saveObject = {};
+    partialObjectProps.forEach((prop) => {
+      if (saveObjectProps.includes(prop) && partialObject[prop]) {
+        saveObject[prop] = partialObject[prop];
+      }
+    });
+
+    this.db.collection(this.collectionName).doc(id).update(saveObject);
+
+    return saveObject;
+  }
+
+  // private methods
   private async getCollectionFromDB<TField = string>(
     collectionName: string,
     options: QueryOptions<TField> = null,

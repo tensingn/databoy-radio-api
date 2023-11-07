@@ -1,4 +1,4 @@
-import { MixLike } from '../../mixes/entities/mix-like.entity';
+import { TrackLike } from '../../tracks/entities/track-like.entity';
 import { ReleaseLike } from '../../releases/entities/release-like.entity';
 
 export class Subscriber {
@@ -8,5 +8,5 @@ export class Subscriber {
 
   releaseLikes: ReleaseLike[];
 
-  mixLikes: MixLike[];
+  trackLikes: TrackLike[];
 }

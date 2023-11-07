@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   FirestoreService,
-  PagingOptions,
   QueryOptions,
 } from '../../services/database/firestore/firestore.service';
 import { User } from './entities/user.entity';
@@ -11,28 +10,27 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('users')
+    @Inject(User.collectionName)
     private firestoreService: FirestoreService,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  create(createUserDto: CreateUserDto): Promise<User> {
+    // only can create user types from this endpoint. admin types must be added manually at this time
+    const user: User = { id: null, type: 'user', ...createUserDto };
+
+    return this.firestoreService.addSingle(user);
   }
 
-  async findCollection(query: QueryOptions): Promise<Array<User>> {
-    const users = await this.firestoreService.getCollection<User>(query, User);
-
-    return users;
+  getCollection(query: QueryOptions): Promise<Array<User>> {
+    return this.firestoreService.getCollection<User>(query);
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.firestoreService.getSingle<User>(id, User);
-
-    return user;
+  getOne(id: string): Promise<User> {
+    return this.firestoreService.getSingle<User>(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto): Promise<Object> {
+    return this.firestoreService.updateSingle(id, updateUserDto, User);
   }
 
   remove(id: number) {

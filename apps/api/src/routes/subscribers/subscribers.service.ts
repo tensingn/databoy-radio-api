@@ -1,18 +1,7 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  NotImplementedException,
-} from '@nestjs/common';
-import { MixLike } from '../mixes/entities/mix-like.entity';
-import { Mix } from '../mixes/entities/mix.entity';
-import { Release } from '../releases/entities/release.entity';
+import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
-import { Subscriber } from './entities/subscriber.entity';
 import { FirestoreService } from '../../services/database/firestore/firestore.service';
-import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class SubscribersService {
@@ -60,16 +49,16 @@ export class SubscribersService {
     //return await this.subscriberRepository.delete(subscriberId);
   }
 
-  async getAllMixesLikedBySubscriber(subscriberId: number) {
+  async getAllTracksLikedBySubscriber(subscriberId: number) {
     // let subscriber = await this._findOne(subscriberId, [
-    //   'mixLikes',
-    //   'mixLikes.mix',
+    //   'trackLikes',
+    //   'trackLikes.track',
     // ]);
-    // let mixes: Mix[] = [];
-    // subscriber.mixLikes.forEach((like) => {
-    //   mixes.push(like.mix);
+    // let track: Track[] = [];
+    // subscriber.trackLikes.forEach((like) => {
+    //   track.push(like.track);
     // });
-    // return mixes;
+    // return track;
   }
 
   async getAllReleasesLikedBySubscriber(subscriberId: number) {
