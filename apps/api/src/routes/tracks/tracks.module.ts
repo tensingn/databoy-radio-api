@@ -5,7 +5,7 @@ import { FirestoreModule } from '../../services/database/firestore/firestore.mod
 import { Track } from './entities/track.entity';
 
 @Module({
-  imports: [FirestoreModule.forFeature(Track.collectionName)],
+  imports: [FirestoreModule.forFeature(Track)],
   controllers: [TracksController],
   providers: [TracksService],
 })

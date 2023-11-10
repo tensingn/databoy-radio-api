@@ -10,7 +10,7 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 @Injectable()
 export class TracksService {
   constructor(
-    @Inject(Track.collectionName)
+    @Inject(Track.name)
     private firestoreService: FirestoreService,
   ) {}
 
@@ -29,6 +29,6 @@ export class TracksService {
   }
 
   update(id: string, updateTrackDto: UpdateTrackDto): Promise<Object> {
-    return this.firestoreService.updateSingle(id, updateTrackDto, Track);
+    return this.firestoreService.updateSingle(id, updateTrackDto);
   }
 }

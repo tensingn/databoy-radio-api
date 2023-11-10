@@ -1,7 +1,6 @@
 import { DatabaseObject } from 'apps/api/src/services/database/models/database-object.entity';
 
 export class User extends DatabaseObject {
-  static collectionName: string = 'users';
   username: string;
   email: string;
   type: 'user' | 'admin';

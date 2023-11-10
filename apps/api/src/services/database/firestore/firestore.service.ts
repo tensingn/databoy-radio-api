@@ -16,12 +16,14 @@ import { FIRESTORE_OPTIONS } from './firestore-core.module';
 @Injectable()
 export class FirestoreService {
   private readonly db: Firestore;
+  private readonly collectionName: string;
 
   constructor(
     @Inject(FIRESTORE_OPTIONS) private options: Settings,
-    private readonly collectionName: string,
+    private readonly type: Type,
   ) {
     this.db = new Firestore(this.options);
+    this.collectionName = type.name.toLocaleLowerCase();
   }
 
   // public methods
@@ -55,14 +57,10 @@ export class FirestoreService {
     return object;
   }
 
-  async updateSingle(
-    id: string,
-    partialObject: Object,
-    saveType: Type,
-  ): Promise<Object> {
+  async updateSingle(id: string, partialObject: Object): Promise<Object> {
     const partialObjectProps = Object.getOwnPropertyNames(partialObject);
     const saveObjectProps = Object.getOwnPropertyNames(
-      new saveType.prototype.constructor(),
+      new this.type.prototype.constructor(),
     );
 
     const saveObject = {};

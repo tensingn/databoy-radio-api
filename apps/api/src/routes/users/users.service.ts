@@ -10,14 +10,13 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject(User.collectionName)
+    @Inject(User.name)
     private firestoreService: FirestoreService,
   ) {}
 
   create(createUserDto: CreateUserDto): Promise<User> {
     // only can create user types from this endpoint. admin types must be added manually at this time
     const user: User = { id: null, type: 'user', ...createUserDto };
-
     return this.firestoreService.addSingle(user);
   }
 
@@ -30,7 +29,7 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto): Promise<Object> {
-    return this.firestoreService.updateSingle(id, updateUserDto, User);
+    return this.firestoreService.updateSingle(id, updateUserDto);
   }
 
   remove(id: number) {

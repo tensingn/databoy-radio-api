@@ -5,7 +5,7 @@ import { FirestoreModule } from '../../services/database/firestore/firestore.mod
 import { User } from './entities/user.entity';
 
 @Module({
-  imports: [FirestoreModule.forFeature(User.collectionName)],
+  imports: [FirestoreModule.forFeature(User)],
   controllers: [UsersController],
   providers: [UsersService],
 })
