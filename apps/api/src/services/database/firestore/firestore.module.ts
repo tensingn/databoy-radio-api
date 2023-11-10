@@ -5,6 +5,7 @@ import {
   FIRESTORE_OPTIONS,
   FirestoreCoreModule,
 } from './firestore-core.module';
+import { DatabaseObject } from '../models/database-object.entity';
 
 @Module({})
 export class FirestoreModule {
@@ -15,18 +16,18 @@ export class FirestoreModule {
     };
   }
 
-  static forFeature(collectionName: string): DynamicModule {
+  static forFeature(type: Type): DynamicModule {
     return {
       module: FirestoreModule,
       providers: [
         {
-          provide: collectionName,
+          provide: type.name,
           useFactory: (options: Settings) =>
-            new FirestoreService(options, collectionName),
+            new FirestoreService(options, type),
           inject: [FIRESTORE_OPTIONS],
         },
       ],
-      exports: [collectionName],
+      exports: [type.name],
     };
   }
 }
