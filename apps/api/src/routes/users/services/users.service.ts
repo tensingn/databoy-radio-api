@@ -1,16 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import {
   FirestoreService,
   QueryOptions,
-} from '../../services/database/firestore/firestore.service';
-import { User } from './entities/user.entity';
+} from '../../../services/database/firestore/firestore.service';
+import { User } from '../entities/user.entity';
+import { InjectCollection } from 'apps/api/src/services/database/firestore/firestore.decorators';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject(User.name)
+    @InjectCollection(User)
     private firestoreService: FirestoreService,
   ) {}
 

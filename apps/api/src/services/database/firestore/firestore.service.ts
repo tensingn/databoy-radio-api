@@ -117,6 +117,7 @@ export class FirestoreService {
 
     if (options?.whereOptions) {
       const whereOptions = options.whereOptions;
+      const whereClauses = whereOptions.whereClauses;
       const pagingOptions = whereOptions.pagingOptions;
 
       if (!pagingOptions) throw new Error('PagingOptions are required.');
@@ -128,11 +129,9 @@ export class FirestoreService {
           )
         : null;
 
-      ref = ref.where(
-        whereOptions.field,
-        whereOptions.operation,
-        whereOptions.value,
-      );
+      whereClauses.forEach((wc) => {
+        ref = ref.where(wc.field, wc.operation, wc.value);
+      });
 
       if (last) {
         ref = ref.startAfter(last);
@@ -178,9 +177,7 @@ export type QueryOptions<TField = string> = {
 };
 
 export type WhereOptions<TField = string> = {
-  field: string;
-  value: TField;
-  operation: WhereFilterOp;
+  whereClauses: WhereClause<TField>[];
   pagingOptions: PagingOptions<string>;
 };
 
@@ -193,4 +190,10 @@ export type OrderOptions<TField = string> = {
 export type PagingOptions<T = string> = {
   startAfter: T;
   limit: number;
+};
+
+export type WhereClause<TField = string> = {
+  field: string;
+  value: TField;
+  operation: WhereFilterOp;
 };

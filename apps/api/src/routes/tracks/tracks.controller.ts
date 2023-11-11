@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { TracksService } from './tracks.service';
+import { TracksService } from './services/tracks.service';
 import { QueryOptions } from '../../services/database/firestore/firestore.service';
 import { UpdateTrackDto } from './dto/update-track.dto';
 
@@ -27,4 +35,12 @@ export class TracksController {
   update(@Param('id') id: string, @Body() updateTrackDto: UpdateTrackDto) {
     return this.tracksService.update(id, updateTrackDto);
   }
+
+  @Post(':id/likes/:userID')
+  like(@Param('id') id: string, @Param('userID') userID: string) {
+    return this.tracksService.like(id, userID);
+  }
+
+  @Delete(':id/likes/:userID')
+  unlike(@Param('id') id: string, @Param('userID') userID: string) {}
 }
