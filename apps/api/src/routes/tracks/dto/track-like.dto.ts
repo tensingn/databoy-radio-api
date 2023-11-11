@@ -1,4 +1,4 @@
-export class CreateTrackLikeDto {
+export class TrackLikeDto {
   trackID: string;
   trackTitle: string;
   userID: string;

@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsEmpty, IsNotEmpty } from 'class-validator';
 
 export class CreateTrackDto {
   @IsNotEmpty()
@@ -8,4 +8,8 @@ export class CreateTrackDto {
   src: string;
 
   release: string;
+
+  // only want likes for internal setting, not to be explicitly sent from client
+  @IsEmpty()
+  likes: number;
 }
