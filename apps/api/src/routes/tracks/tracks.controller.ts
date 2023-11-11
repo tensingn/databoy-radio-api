@@ -42,5 +42,7 @@ export class TracksController {
   }
 
   @Delete(':id/likes/:userID')
-  unlike(@Param('id') id: string, @Param('userID') userID: string) {}
+  unlike(@Param('id') id: string, @Param('userID') userID: string) {
+    return this.tracksService.like(id, userID, true);
+  }
 }

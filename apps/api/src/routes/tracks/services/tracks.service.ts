@@ -55,7 +55,7 @@ export class TracksService {
     const user = await this.usersService.getOne(userID);
     if (!user) throw new NotFoundException(User);
 
-    // add tracklike
+    // add/delete tracklike
     const trackLike: TrackLike = {
       id: null,
       trackID: id,
@@ -63,7 +63,11 @@ export class TracksService {
       userID: userID,
       username: user.username,
     };
-    await this.trackLikesService.create(trackLike);
+    if (remove) {
+      await this.trackLikesService.delete(trackLike);
+    } else {
+      await this.trackLikesService.create(trackLike);
+    }
 
     // add/remove like to/from track
     track.likes = (track.likes || 0) + (remove ? -1 : 1);

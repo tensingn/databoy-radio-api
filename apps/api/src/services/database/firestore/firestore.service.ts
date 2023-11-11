@@ -65,7 +65,7 @@ export class FirestoreService {
 
     const saveObject = {};
     partialObjectProps.forEach((prop) => {
-      if (saveObjectProps.includes(prop) && partialObject[prop]) {
+      if (saveObjectProps.includes(prop) && prop in partialObject) {
         saveObject[prop] = partialObject[prop];
       }
     });
@@ -73,6 +73,10 @@ export class FirestoreService {
     this.db.collection(this.collectionName).doc(id).update(saveObject);
 
     return saveObject;
+  }
+
+  async deleteSingle(id: string) {
+    return this.db.collection(this.collectionName).doc(id).delete();
   }
 
   // private methods
