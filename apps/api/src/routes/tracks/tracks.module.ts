@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TracksService } from './services/tracks.service';
 import { TracksController } from './tracks.controller';
-import { FirestoreModule } from '../../services/database/firestore/firestore.module';
-import { Track } from './entities/track.entity';
 import { UsersModule } from '../users/users.module';
-import { TrackLike } from './entities/track-like.entity';
-import { TrackLikesService } from './services/track-likes.service';
+import { LikesModule } from '../../services/likes/likes.module';
+import { MusicModule } from '../../services/music/music.module';
 
 @Module({
-  imports: [
-    FirestoreModule.forFeature(Track),
-    FirestoreModule.forFeature(TrackLike),
-    UsersModule,
-  ],
+  imports: [MusicModule, LikesModule, UsersModule],
   controllers: [TracksController],
-  providers: [TracksService, TrackLikesService],
+  providers: [TracksService],
 })
 export class TracksModule {}

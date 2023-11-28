@@ -1,16 +1,10 @@
-import { DatabaseObject } from 'apps/api/src/services/database/models/database-object.entity';
+import { Like } from 'apps/api/src/services/likes/entities/like.entity';
 
-export class TrackLike extends DatabaseObject {
-  trackID: string;
+export class TrackLike extends Like {
   trackTitle: string;
-  userID: string;
-  username: string;
 
   constructor() {
-    super();
-    this.trackID = '';
+    super(TrackLike.name.toLocaleLowerCase());
     this.trackTitle = '';
-    this.userID = '';
-    this.username = '';
   }
 }

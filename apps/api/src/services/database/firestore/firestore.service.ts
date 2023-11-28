@@ -2,6 +2,7 @@ import {
   CollectionReference,
   DocumentSnapshot,
   FieldPath,
+  Filter,
   Firestore,
   OrderByDirection,
   Query,
@@ -12,18 +13,36 @@ import {
 import { Inject, Injectable, Type } from '@nestjs/common';
 import { DatabaseObject } from '../models/database-object.entity';
 import { FIRESTORE_OPTIONS } from './firestore-core.module';
+import { DatabaseObjectMultiTypeContainer } from '../models/database-object-multi-type-container.entity';
 
 @Injectable()
 export class FirestoreService {
   private readonly db: Firestore;
-  private readonly collectionName: string;
+  private readonly isSingleType: boolean;
 
   constructor(
     @Inject(FIRESTORE_OPTIONS) private options: Settings,
-    private readonly type: Type,
+    private readonly types: Array<Type>,
+    private readonly collectionName: string,
   ) {
     this.db = new Firestore(this.options);
-    this.collectionName = type.name.toLocaleLowerCase();
+    this.isSingleType = types.length === 1;
+    this.validate();
+  }
+
+  private validate() {
+    if (this.types.length < 1) {
+      throw new Error('No types passed in.');
+    }
+
+    if (
+      !this.isSingleType &&
+      this.types.some((t) => !('type' in new t.prototype.constructor()))
+    ) {
+      throw new Error(
+        "Invalid types passed in. For a multi-type container, each type passed in must have a 'type' property.",
+      );
+    }
   }
 
   // public methods
@@ -57,20 +76,42 @@ export class FirestoreService {
     return object;
   }
 
-  async updateSingle(id: string, partialObject: Object): Promise<Object> {
+  async updateSingle(
+    id: string,
+    partialObject: Object | DatabaseObjectMultiTypeContainer,
+  ): Promise<Object> {
     const partialObjectProps = Object.getOwnPropertyNames(partialObject);
+
+    let updateType: Type;
+    if (this.isSingleType) {
+      updateType = this.types[0];
+    } else {
+      updateType = this.types.find(
+        (t) =>
+          'type' in partialObject &&
+          t.name.toLocaleLowerCase() === partialObject.type,
+      );
+    }
+
+    if (!updateType)
+      throw new Error('Could not derive updateType from partialObject.');
+
     const saveObjectProps = Object.getOwnPropertyNames(
-      new this.type.prototype.constructor(),
+      new updateType.prototype.constructor(),
     );
 
     const saveObject = {};
     partialObjectProps.forEach((prop) => {
-      if (saveObjectProps.includes(prop) && prop in partialObject) {
+      if (
+        prop !== 'type' &&
+        saveObjectProps.includes(prop) &&
+        prop in partialObject
+      ) {
         saveObject[prop] = partialObject[prop];
       }
     });
 
-    this.db.collection(this.collectionName).doc(id).update(saveObject);
+    await this.db.collection(this.collectionName).doc(id).update(saveObject);
 
     return saveObject;
   }
@@ -133,9 +174,16 @@ export class FirestoreService {
           )
         : null;
 
-      whereClauses.forEach((wc) => {
-        ref = ref.where(wc.field, wc.operation, wc.value);
-      });
+      if (whereOptions.operator == 'or') {
+        const orWhereClauses: Array<Filter> = whereClauses.map((wc) => {
+          return Filter.where(wc.field, wc.operation, wc.value);
+        });
+        ref = ref.where(Filter.or(...orWhereClauses));
+      } else {
+        whereClauses.forEach((wc) => {
+          ref = ref.where(wc.field, wc.operation, wc.value);
+        });
+      }
 
       if (last) {
         ref = ref.startAfter(last);
@@ -182,6 +230,7 @@ export type QueryOptions<TField = string> = {
 
 export type WhereOptions<TField = string> = {
   whereClauses: WhereClause<TField>[];
+  operator?: 'and' | 'or';
   pagingOptions: PagingOptions<string>;
 };
 
@@ -197,7 +246,14 @@ export type PagingOptions<T = string> = {
 };
 
 export type WhereClause<TField = string> = {
-  field: string;
+  field: string | FieldPath;
   value: TField;
   operation: WhereFilterOp;
+};
+
+export const STANDARD: QueryOptions = {
+  pagingOptions: {
+    startAfter: null,
+    limit: 10,
+  },
 };
