@@ -1,16 +1,12 @@
-import { DatabaseObject } from 'apps/api/src/services/database/models/database-object.entity';
+import { Music } from 'apps/api/src/services/music/entities/music.entity';
 
-export class Track extends DatabaseObject {
-  title: string;
+export class Track extends Music {
   src: string;
-  release: string;
-  likes: number;
+  releaseID: string;
 
   constructor() {
-    super();
-    this.title = '';
+    super(Track.name.toLocaleLowerCase());
     this.src = '';
-    this.release = '';
-    this.likes = 0;
+    this.releaseID = '';
   }
 }

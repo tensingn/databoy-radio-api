@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { TracksService } from './services/tracks.service';
@@ -22,7 +23,12 @@ export class TracksController {
   }
 
   @Get()
-  getCollection(@Body() query: QueryOptions) {
+  getCollection(
+    @Query('startAfter') startAfter: string = null,
+    @Query('limit') limit: number = 10,
+  ) {
+    // TODO - implement paging
+    let query: QueryOptions = TracksService.STANDARD_TRACKS;
     return this.tracksService.getCollection(query);
   }
 
@@ -44,5 +50,10 @@ export class TracksController {
   @Delete(':id/likes/:userID')
   unlike(@Param('id') id: string, @Param('userID') userID: string) {
     return this.tracksService.like(id, userID, true);
+  }
+
+  @Get(':id/likes')
+  getLikes(@Param('id') id: string) {
+    return this.tracksService.getLikes(id);
   }
 }

@@ -1,8 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateTrackDto } from './create-track.dto';
+import { CreateReleaseDto } from './create-release.dto';
 import { IsEmpty } from 'class-validator';
 
-export class UpdateTrackDto extends PartialType(CreateTrackDto) {
+export class UpdateReleaseDto extends PartialType(CreateReleaseDto) {
   @IsEmpty()
   type?: string;
 }

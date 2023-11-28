@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import {
@@ -6,12 +6,12 @@ import {
   QueryOptions,
 } from '../../../services/database/firestore/firestore.service';
 import { User } from '../entities/user.entity';
-import { InjectCollection } from 'apps/api/src/services/database/firestore/firestore.decorators';
+import { InjectCollectionByType } from 'apps/api/src/services/database/firestore/firestore.decorators';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectCollection(User)
+    @InjectCollectionByType(User)
     private firestoreService: FirestoreService,
   ) {}
 

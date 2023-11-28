@@ -1,9 +1,9 @@
 import { MusicDto } from 'apps/api/src/services/music/dto/music.dto';
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateTrackDto extends MusicDto {
+export class CreateReleaseDto extends MusicDto {
   @IsNotEmpty()
-  src: string;
+  releaseDate: Date;
 
-  release: string;
+  tracks: Array<string>;
 }
