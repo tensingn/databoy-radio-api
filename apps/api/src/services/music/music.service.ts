@@ -3,6 +3,7 @@ import { Music } from './entities/music.entity';
 import {
   FirestoreService,
   QueryOptions,
+  STANDARD,
 } from '../database/firestore/firestore.service';
 import { DatabaseObject } from '../database/models/database-object.entity';
 import { MusicDto } from './dto/music.dto';
@@ -12,6 +13,7 @@ import { Track } from '../../routes/tracks/entities/track.entity';
 import { InjectCollectionByType } from '../database/firestore/firestore.decorators';
 import { UpdateReleaseDto } from '../../routes/releases/dto/update-release.dto';
 import { UpdateTrackDto } from '../../routes/tracks/dto/update-track.dto';
+import { FieldPath } from '@google-cloud/firestore';
 
 @Injectable()
 export class MusicService {
@@ -25,8 +27,8 @@ export class MusicService {
     private firestoreService: FirestoreService,
   ) {}
 
-  getCollection<TMusic extends DatabaseObject>(
-    query: QueryOptions,
+  getCollection<TMusic extends DatabaseObject, TQueryField = string>(
+    query: QueryOptions<TQueryField>,
   ): Promise<Array<TMusic>> {
     return this.firestoreService.getCollection(query);
   }
@@ -63,5 +65,32 @@ export class MusicService {
       ...(await this.firestoreService.updateSingle(id, musicDto)),
     };
     return returnObj;
+  }
+
+  async updateMany(
+    updateObjects: Array<{
+      id: string;
+      data: UpdateReleaseDto | UpdateTrackDto;
+    }>,
+  ): Promise<Array<{ id: string; data: Object }>> {
+    return this.firestoreService.updateMany(updateObjects);
+  }
+
+  static queryMultipleItemsByID(
+    ids: Array<string>,
+  ): QueryOptions<Array<string>> {
+    return {
+      whereOptions: {
+        whereClauses: [
+          {
+            field: FieldPath.documentId(),
+            operation: 'in',
+            value: ids,
+          },
+        ],
+        operator: 'and',
+        pagingOptions: STANDARD.pagingOptions,
+      },
+    };
   }
 }

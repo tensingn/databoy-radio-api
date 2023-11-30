@@ -5,5 +5,5 @@ export class CreateTrackDto extends MusicDto {
   @IsNotEmpty()
   src: string;
 
-  release: string;
+  releaseID: string;
 }

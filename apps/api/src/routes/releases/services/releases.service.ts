@@ -14,6 +14,10 @@ import { LikesService } from 'apps/api/src/services/likes/likes.service';
 import { ReleaseLike } from '../entities/release-like.entity';
 import { MusicService } from 'apps/api/src/services/music/music.service';
 import { Track } from '../../tracks/entities/track.entity';
+import { AddTracksToReleaseDto } from '../dto/add-tracks-to-release.dto';
+import { Music } from 'apps/api/src/services/music/entities/music.entity';
+import { UpdateTrackDto } from '../../tracks/dto/update-track.dto';
+import { AlreadyExistsException } from 'apps/api/src/exceptions/already-exists.exception';
 
 @Injectable()
 export class ReleasesService {
@@ -112,6 +116,55 @@ export class ReleasesService {
         ReleaseLike.name.toLocaleLowerCase(),
       ),
     );
+  }
+
+  async addTracksToRelease(
+    id: string,
+    addTracksToReleaseDto: AddTracksToReleaseDto,
+  ): Promise<Array<Object>> {
+    const music: Array<Music> = await this.musicService.getCollection(
+      MusicService.queryMultipleItemsByID([
+        id,
+        ...addTracksToReleaseDto.tracks,
+      ]),
+    );
+
+    const release = music.find(
+      (m) => m.type === Release.name.toLocaleLowerCase() && m.id === id,
+    ) as Release;
+    const tracks = music.filter(
+      (m) => m.type === Track.name.toLocaleLowerCase(),
+    ) as Array<Track>;
+
+    if (!release) throw new NotFoundException(Release);
+    if (!tracks || tracks.length !== addTracksToReleaseDto.tracks.length)
+      throw new NotFoundException(Track, 'Not all tracks were found.');
+
+    const indexOfTrackWithRelease = tracks.findIndex((t) => t.releaseID);
+    if (indexOfTrackWithRelease != -1) {
+      throw new AlreadyExistsException(
+        Track,
+        `Track ${tracks[indexOfTrackWithRelease].id} is already part of Release ${id}.`,
+      );
+    }
+
+    const updateTrackObjects: Array<{ id: string; data: UpdateTrackDto }> =
+      tracks.map((t) => {
+        return {
+          id: t.id,
+          data: {
+            type: Track.name.toLocaleLowerCase(),
+            releaseID: id,
+          },
+        };
+      });
+
+    return (await this.musicService.updateMany(updateTrackObjects)).map((t) => {
+      return {
+        id: t.id,
+        releaseID: (t.data as Track).releaseID,
+      };
+    });
   }
 
   static STANDARD_RELEASES: QueryOptions = {
