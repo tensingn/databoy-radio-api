@@ -80,40 +80,44 @@ export class FirestoreService {
     id: string,
     partialObject: Object | DatabaseObjectMultiTypeContainer,
   ): Promise<Object> {
-    const partialObjectProps = Object.getOwnPropertyNames(partialObject);
-
-    let updateType: Type;
-    if (this.isSingleType) {
-      updateType = this.types[0];
-    } else {
-      updateType = this.types.find(
-        (t) =>
-          'type' in partialObject &&
-          t.name.toLocaleLowerCase() === partialObject.type,
-      );
-    }
-
-    if (!updateType)
-      throw new Error('Could not derive updateType from partialObject.');
-
-    const saveObjectProps = Object.getOwnPropertyNames(
-      new updateType.prototype.constructor(),
-    );
-
-    const saveObject = {};
-    partialObjectProps.forEach((prop) => {
-      if (
-        prop !== 'type' &&
-        saveObjectProps.includes(prop) &&
-        prop in partialObject
-      ) {
-        saveObject[prop] = partialObject[prop];
-      }
-    });
+    const saveObject = this.assembleUpdateObject(partialObject);
 
     await this.db.collection(this.collectionName).doc(id).update(saveObject);
 
     return saveObject;
+  }
+
+  async updateMany(
+    partialObjects: Array<{
+      id: string;
+      data: Object | DatabaseObjectMultiTypeContainer;
+    }>,
+  ): Promise<Array<{ id: string; data: Object }>> {
+    const saveObjects: Array<{ id: string; data: {} }> = partialObjects.map(
+      (po) => {
+        return {
+          id: po.id,
+          data: this.assembleUpdateObject(po.data),
+        };
+      },
+    );
+
+    const batch = this.db.batch();
+    const collection = this.db.collection(this.collectionName);
+
+    saveObjects.forEach((o) => {
+      const ref = collection.doc(o.id);
+      batch.update(ref, o.data);
+    });
+
+    await batch.commit();
+
+    return saveObjects.map((o, i) => {
+      return {
+        id: partialObjects[i].id,
+        data: o.data,
+      };
+    });
   }
 
   async deleteSingle(id: string) {
@@ -219,6 +223,43 @@ export class FirestoreService {
     }
 
     return ref;
+  }
+
+  private assembleUpdateObject(
+    partialObject: Object | DatabaseObjectMultiTypeContainer,
+  ): {} {
+    const partialObjectProps = Object.getOwnPropertyNames(partialObject);
+
+    let updateType: Type;
+    if (this.isSingleType) {
+      updateType = this.types[0];
+    } else {
+      updateType = this.types.find(
+        (t) =>
+          'type' in partialObject &&
+          t.name.toLocaleLowerCase() === partialObject.type,
+      );
+    }
+
+    if (!updateType)
+      throw new Error('Could not derive updateType from partialObject.');
+
+    const saveObjectProps = Object.getOwnPropertyNames(
+      new updateType.prototype.constructor(),
+    );
+
+    const saveObject = {};
+    partialObjectProps.forEach((prop) => {
+      if (
+        prop !== 'type' &&
+        saveObjectProps.includes(prop) &&
+        prop in partialObject
+      ) {
+        saveObject[prop] = partialObject[prop];
+      }
+    });
+
+    return saveObject;
   }
 }
 
