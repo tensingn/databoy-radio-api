@@ -18,6 +18,7 @@ import { AddTracksToReleaseDto } from '../dto/add-tracks-to-release.dto';
 import { Music } from 'apps/api/src/services/music/entities/music.entity';
 import { UpdateTrackDto } from '../../tracks/dto/update-track.dto';
 import { AlreadyExistsException } from 'apps/api/src/exceptions/already-exists.exception';
+import { Dictionary } from 'apps/api/src/services/database/models/dictionary';
 
 @Injectable()
 export class ReleasesService {
@@ -36,8 +37,11 @@ export class ReleasesService {
 
   getCollection(
     query: QueryOptions = ReleasesService.STANDARD_RELEASES,
-  ): Promise<Array<Release | Release>> {
-    return this.musicService.getCollection(query);
+    includeTracks: boolean = false,
+  ): Promise<Array<Release>> {
+    return includeTracks
+      ? this.getCollectionWithTracks()
+      : this.musicService.getCollection(query);
   }
 
   getOne(id: string, includeTracks: boolean = false): Promise<Release> {
@@ -56,6 +60,26 @@ export class ReleasesService {
     }
 
     return release;
+  }
+
+  async getCollectionWithTracks(): Promise<Array<Release>> {
+    const [releases, tracks] = await Promise.all([
+      this.getCollection(ReleasesService.STANDARD_RELEASES, false),
+      this.musicService.getCollection<Track>(this.queryTracksWithReleaseID()),
+    ]);
+
+    const releaseDict: Dictionary<Release> = {};
+    releases.forEach((r) => (releaseDict[r.id] = r));
+
+    tracks.forEach((t) => {
+      const release = releaseDict[t.releaseID];
+      if (release && !release.tracks) {
+        release.tracks = new Array<Track>();
+      }
+      release?.tracks.push(t);
+    });
+
+    return releases;
   }
 
   update(id: string, updateReleaseDto: UpdateReleaseDto): Promise<Object> {
@@ -144,7 +168,7 @@ export class ReleasesService {
     if (indexOfTrackWithRelease != -1) {
       throw new AlreadyExistsException(
         Track,
-        `Track ${tracks[indexOfTrackWithRelease].id} is already part of Release ${id}.`,
+        `Track ${tracks[indexOfTrackWithRelease].id} is already part of Release ${tracks[indexOfTrackWithRelease].releaseID}.`,
       );
     }
 
@@ -196,6 +220,25 @@ export class ReleasesService {
             field: 'releaseID',
             operation: '==',
             value: id,
+          },
+        ],
+        operator: 'and',
+        pagingOptions,
+      },
+    };
+    return query;
+  }
+
+  private queryTracksWithReleaseID(
+    pagingOptions: PagingOptions = STANDARD.pagingOptions,
+  ): QueryOptions {
+    const query: QueryOptions = {
+      whereOptions: {
+        whereClauses: [
+          {
+            field: 'releaseID',
+            operation: '!=',
+            value: '',
           },
         ],
         operator: 'and',
