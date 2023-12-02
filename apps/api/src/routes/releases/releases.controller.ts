@@ -28,9 +28,10 @@ export class ReleasesController {
   getCollection(
     @Query('startAfter') startAfter: string = null,
     @Query('limit') limit: number = 10,
+    @Query('includeTracks', new TransformBooleanPipe()) includeTracks: boolean,
   ) {
     let query: QueryOptions = ReleasesService.STANDARD_RELEASES;
-    return this.releasesService.getCollection(query);
+    return this.releasesService.getCollection(query, includeTracks);
   }
 
   @Get(':id')
