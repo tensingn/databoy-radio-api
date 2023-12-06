@@ -1,15 +1,18 @@
-export class CalendarEvent {
-  calendarEventId: number;
+import { Timestamp } from '@google-cloud/firestore';
+import { DatabaseObjectMultiTypeContainer } from 'apps/api/src/services/database/models/database-object-multi-type-container.entity';
 
+export class CalendarEvent extends DatabaseObjectMultiTypeContainer {
+  static collectionName: string = 'event';
   title: string;
-
-  startTime: Date;
-
-  endTime: Date;
-
   description: string;
+  startTimestamp: Timestamp;
+  endTimestamp: Timestamp;
+  numGoing: number;
 
-  longDescription: string;
-
-  descriptionImageUrl: string;
+  constructor(type: string) {
+    super(type);
+    this.title = '';
+    this.description = '';
+    this.numGoing = 0;
+  }
 }
