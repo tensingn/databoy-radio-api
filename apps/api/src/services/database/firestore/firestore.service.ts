@@ -1,5 +1,6 @@
 import {
   CollectionReference,
+  DocumentReference,
   DocumentSnapshot,
   FieldPath,
   Filter,
@@ -9,6 +10,7 @@ import {
   QueryDocumentSnapshot,
   Settings,
   WhereFilterOp,
+  WriteResult,
 } from '@google-cloud/firestore';
 import { Inject, Injectable, Type } from '@nestjs/common';
 import { DatabaseObject } from '../models/database-object.entity';
@@ -67,11 +69,26 @@ export class FirestoreService {
     return this.getSingleFromDB<T>(this.collectionName, id);
   }
 
-  async addSingle<T extends DatabaseObject>(object: T): Promise<T> {
+  async addSingle<T extends DatabaseObject>(
+    object: T,
+    hasID: boolean = false,
+  ): Promise<T> {
     const { id, ...saveObject } = object;
-    const res = await this.db.collection(this.collectionName).add(saveObject);
+    let res: DocumentReference | WriteResult;
 
-    object.id = res.id;
+    if (hasID) {
+      if (!id) throw new Error('ID required to add object.');
+
+      const docRef = this.db.collection(this.collectionName).doc(id);
+
+      if ((await docRef.get()).exists)
+        throw new Error('Document with this ID already exists.');
+
+      res = await docRef.set(saveObject);
+    } else {
+      res = await this.db.collection(this.collectionName).add(saveObject);
+      object.id = id ? id : (res as DocumentReference).id;
+    }
 
     return object;
   }
