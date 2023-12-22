@@ -1,12 +1,15 @@
-import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
 import { FirestoreService } from '../../services/database/firestore/firestore.service';
 import { User } from '../users/entities/user.entity';
+import { InjectCollectionByType } from '../../services/database/firestore/firestore.decorators';
 
 @Injectable()
 export class SubscribersService {
-  constructor(@Inject(User.name) private firestoreService: FirestoreService) {}
+  constructor(
+    @InjectCollectionByType(User) private firestoreService: FirestoreService,
+  ) {}
 
   // create new sub
   async create(createSubscriberDto: CreateSubscriberDto) {
