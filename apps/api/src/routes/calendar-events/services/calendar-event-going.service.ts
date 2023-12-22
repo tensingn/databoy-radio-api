@@ -69,6 +69,24 @@ export class CalendarEventGoingService {
     return this.firestoreService.getCollection(query);
   }
 
+  async getSingle(
+    calendarEventID: string,
+    userID: string,
+  ): Promise<Going | null> {
+    const going = await this.firestoreService.getCollection<Going>(
+      CalendarEventGoingService.getQueryOptions(calendarEventID, userID, 1),
+    );
+
+    if (!going?.length) {
+      throw new NotFoundException(
+        Going,
+        `User ${userID} is not going to Calendar Event ${calendarEventID}`,
+      );
+    }
+
+    return going[0];
+  }
+
   static getQueryOptions(
     calendarEventID: string,
     userID: string,

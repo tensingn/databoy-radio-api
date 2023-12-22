@@ -4,5 +4,6 @@ export class GetCalendarEventDto {
   startTime: Date;
   endTime: Date;
   description: string;
+  longDescription: string;
   type: string;
 }
