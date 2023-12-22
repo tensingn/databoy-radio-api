@@ -12,21 +12,19 @@ import {
 import { CalendarEventsService } from './services/calendar-events.service';
 import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
 import { AuthorizationGuard } from '../../authorization/authorization.guard';
-import { PermissionsGuard } from '../../authorization/permissions.guard';
-import { Permissions } from '../../authorization/permissions.decorator';
-import { CalendarEvent } from './entities/calendar-event.entity';
 import { TransformDatePipe } from '../../pipes/transform-date.pipe';
 import { GetCalendarEventDto } from './dto/get-calendar-event.dto';
 import { UpdateCalendarEventDto } from './dto/update-calendar-event.dto';
 import { Going } from './entities/going.entity';
+import { RolesGuard } from '../../authorization/roles.guard';
+import { ROLES, Roles } from '../../authorization/roles.decorator';
+import { UserSelfActionGuard } from '../../authorization/user-self-action.guard';
 
 @Controller('api/calendar-events')
 export class CalendarEventsController {
   constructor(private readonly calendarEventsService: CalendarEventsService) {}
 
   @Get()
-  // @UseGuards(AuthorizationGuard, PermissionsGuard)
-  // @Permissions('read:calendar_events')
   getCollection(
     @Query('startOfRange', new TransformDatePipe()) startOfRange: Date,
     @Query('endOfRange', new TransformDatePipe()) endOfRange: Date,
@@ -35,18 +33,20 @@ export class CalendarEventsController {
   }
 
   @Get(':id')
-  // @UseGuards(AuthorizationGuard, PermissionsGuard)
-  // @Permissions('read:calendar_events')
   findOne(@Param('id') id: string): Promise<GetCalendarEventDto> {
     return this.calendarEventsService.findOne(id);
   }
 
   @Post()
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  @Roles(ROLES.ADMIN)
   create(@Body() body: CreateCalendarEventDto): Promise<GetCalendarEventDto> {
     return this.calendarEventsService.create(body);
   }
 
   @Patch(':id')
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  @Roles(ROLES.ADMIN)
   update(
     @Param('id') id: string,
     @Body() body: UpdateCalendarEventDto,
@@ -55,6 +55,8 @@ export class CalendarEventsController {
   }
 
   @Post(':id/going/:userID')
+  @UseGuards(AuthorizationGuard, RolesGuard, new UserSelfActionGuard('userID'))
+  @Roles(ROLES.USER, ROLES.ADMIN)
   addGoing(
     @Param('id') id: string,
     @Param('userID') userID: string,
@@ -63,6 +65,8 @@ export class CalendarEventsController {
   }
 
   @Delete(':id/going/:userID')
+  @UseGuards(AuthorizationGuard, RolesGuard, new UserSelfActionGuard('userID'))
+  @Roles(ROLES.USER, ROLES.ADMIN)
   removeGoing(
     @Param('id') id: string,
     @Param('userID') userID: string,
@@ -71,7 +75,19 @@ export class CalendarEventsController {
   }
 
   @Get(':id/going')
-  getGoing(@Param('id') id: string): Promise<Array<Going>> {
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  @Roles(ROLES.USER, ROLES.ADMIN)
+  getGoingCollection(@Param('id') id: string): Promise<Array<Going>> {
     return this.calendarEventsService.getGoing(id);
+  }
+
+  @Get(':id/going/:userID')
+  @UseGuards(AuthorizationGuard, RolesGuard, new UserSelfActionGuard('userID'))
+  @Roles(ROLES.USER, ROLES.ADMIN)
+  isGoing(
+    @Param('id') id: string,
+    @Param('userID') userID: string,
+  ): Promise<boolean> {
+    return this.calendarEventsService.isGoing(id, userID);
   }
 }

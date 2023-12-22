@@ -96,15 +96,35 @@ export class CalendarEventsService {
       throw new NotFoundException(CalendarEvent);
     }
 
+    const { startTime, endTime, ...dtoNoTimes } = updateCalendarEventDto;
+
     const returnObj = {
       id,
       ...(await this.firestoreService.updateSingle(
         id,
-        Object.assign(updateCalendarEventDto, {
+        Object.assign(dtoNoTimes, {
           type: calendarEvent.type,
+          startTimestamp: Timestamp.fromDate(
+            startTime ?? calendarEvent.startTime,
+          ),
+          endTimestamp: Timestamp.fromDate(endTime ?? calendarEvent.endTime),
         }),
       )),
     };
+
+    if (updateCalendarEventDto.startTime) {
+      (returnObj as GetCalendarEventDto).startTime = (
+        returnObj as CalendarEvent
+      ).startTimestamp.toDate();
+      delete (returnObj as CalendarEvent).startTimestamp;
+    }
+
+    if (updateCalendarEventDto.endTime) {
+      (returnObj as GetCalendarEventDto).endTime = (
+        returnObj as CalendarEvent
+      ).endTimestamp.toDate();
+      delete (returnObj as CalendarEvent).endTimestamp;
+    }
 
     return returnObj;
   }
@@ -159,10 +179,14 @@ export class CalendarEventsService {
       : null;
   }
 
-  getGoing(id: string): Promise<Array<Going>> {
+  getGoing(calendarEventID: string): Promise<Array<Going>> {
     return this.calendarEventGoingService.getCollection(
-      CalendarEventGoingService.getQueryOptions(id, null),
+      CalendarEventGoingService.getQueryOptions(calendarEventID, null),
     );
+  }
+
+  isGoing(calendarEventID: string, userID: string): Promise<boolean> {
+    return this.calendarEventGoingService.isGoing(calendarEventID, userID);
   }
 
   static queryEventsInRange(

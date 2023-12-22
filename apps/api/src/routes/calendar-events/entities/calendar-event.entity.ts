@@ -5,6 +5,7 @@ export class CalendarEvent extends DatabaseObjectMultiTypeContainer {
   static collectionName: string = 'event';
   title: string;
   description: string;
+  longDescription: string;
   startTimestamp: Timestamp;
   endTimestamp: Timestamp;
   numGoing: number;
@@ -13,6 +14,9 @@ export class CalendarEvent extends DatabaseObjectMultiTypeContainer {
     super(type);
     this.title = '';
     this.description = '';
+    this.longDescription = '';
     this.numGoing = 0;
+    this.startTimestamp = Timestamp.now();
+    this.endTimestamp = Timestamp.now();
   }
 }

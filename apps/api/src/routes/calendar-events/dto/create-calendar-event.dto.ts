@@ -22,6 +22,8 @@ export class CreateCalendarEventDto {
 
   description: string;
 
+  longDescription: string;
+
   @IsNotEmpty()
   @IsIn([
     LiveEvent.name.toLocaleLowerCase(),
