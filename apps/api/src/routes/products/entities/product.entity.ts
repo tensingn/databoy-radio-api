@@ -1,26 +1,23 @@
-import { Size } from './size.entity';
-import { Image } from './image.entity';
+import { Timestamp } from '@google-cloud/firestore';
+import { DatabaseObject } from 'apps/api/src/services/database/models/database-object.entity';
 
-// don't need any serialization for this entity because
-// it doesn't contain any sensitive data
-
-export class Product {
-  productId: number;
-
-  // used by snipcart
-  id: number;
-
+export class Product extends DatabaseObject {
   name: string;
-
   pluralName: string;
-
   type: string;
-
   price: number;
+  imageURLs: Array<string>;
+  releaseTimestamp: Timestamp;
+  sizes: Array<string>;
 
-  images: Image[];
-
-  releaseDate: Date;
-
-  sizes: Size[];
+  constructor() {
+    super();
+    this.name = '';
+    this.pluralName = '';
+    this.type = '';
+    this.price = 0;
+    this.imageURLs = [];
+    this.sizes = [];
+    this.releaseTimestamp = Timestamp.now();
+  }
 }
