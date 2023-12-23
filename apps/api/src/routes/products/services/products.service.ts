@@ -11,6 +11,7 @@ import { CreateProductDto } from '../dto/create-product.dto';
 import { Timestamp } from '@google-cloud/firestore';
 import { UpdateProductDto } from '../dto/update-product.dto';
 import { NotFoundException } from 'apps/api/src/exceptions/not-found.exception';
+import { GetProductSnipcartDto } from '../dto/snipcart.dto';
 
 @Injectable()
 export class ProductsService {
@@ -26,24 +27,14 @@ export class ProductsService {
     ).map((p) => this.convertEntityToGetDto(p));
   }
 
-  async findOne(id: string, snipcart: boolean = false): Promise<GetProductDto> {
+  async findOne(id: string): Promise<GetProductDto> {
     const product = await this.firestoreService.getSingle<Product>(id);
 
     if (!product) {
       throw new HttpException('', HttpStatus.NO_CONTENT);
     }
+
     return this.convertEntityToGetDto(product);
-    // let product: Product = await this.productRepository.findOne(productId, {
-    //   select: ['price'],
-    //   relations: ['images', 'sizes'],
-    // });
-    // if (!product) {
-    //   throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
-    // }
-    // if (snipcart) {
-    //   product.id = product.productId;
-    // }
-    // return product;
   }
 
   async create(createProductDto: CreateProductDto): Promise<GetProductDto> {
@@ -84,6 +75,30 @@ export class ProductsService {
     }
 
     return returnObj;
+  }
+
+  async findOneForSnipcart(
+    id: string,
+    url: string,
+  ): Promise<GetProductSnipcartDto> {
+    const product = await this.findOne(id);
+
+    const snipcartDto: GetProductSnipcartDto = {
+      id,
+      url,
+      price: product.price,
+    };
+
+    if (product.sizes?.length) {
+      snipcartDto.customFields = [
+        {
+          name: 'Size',
+          options: product.sizes.join('|'),
+        },
+      ];
+    }
+
+    return snipcartDto;
   }
 
   private convertEntityToGetDto(entity: Product): GetProductDto {

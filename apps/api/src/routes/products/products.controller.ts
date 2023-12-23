@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { ProductsService } from './services/products.service';
 import { GetProductDto } from './dto/get-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Request } from 'express';
+import { GetProductSnipcartDto } from './dto/snipcart.dto';
 
 @Controller('api/products')
 export class ProductsController {
@@ -31,10 +33,14 @@ export class ProductsController {
     return this.productsService.update(id, body);
   }
 
-  // @Get('snipcart/:productId')
-  // async findOneSnipCart(
-  //   @Param('productId') productId: string,
-  // ): Promise<GetProductDto> {
-  //   return this.productsService.findOne(+productId, true);
-  // }
+  @Get(':id/snipcart')
+  findOneSnipCart(
+    @Param('id') id: string,
+    @Req() req: Request,
+  ): Promise<GetProductSnipcartDto> {
+    const url: string = `${req.protocol}://${req.get('Host')}${
+      req.originalUrl
+    }`;
+    return this.productsService.findOneForSnipcart(id, url);
+  }
 }
