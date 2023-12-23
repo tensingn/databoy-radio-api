@@ -1,49 +1,22 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { CalendarEventType } from './calendar-event-type.entity';
-import { CalendarEventLocation } from './calendar-event-location.entity';
-import { CalendarEventSubscription } from './calendar-event-subscription.entity';
+import { Timestamp } from '@google-cloud/firestore';
+import { DatabaseObjectMultiTypeContainer } from 'apps/api/src/services/database/models/database-object-multi-type-container.entity';
 
-@Entity()
-export class CalendarEvent {
-  @PrimaryGeneratedColumn()
-  calendarEventId: number;
-
-  @Column()
+export class CalendarEvent extends DatabaseObjectMultiTypeContainer {
+  static collectionName: string = 'event';
   title: string;
-
-  @Column()
-  startTime: Date;
-
-  @Column()
-  endTime: Date;
-
-  @Column('tinytext')
   description: string;
-
-  @Column('text')
   longDescription: string;
+  startTimestamp: Timestamp;
+  endTimestamp: Timestamp;
+  numGoing: number;
 
-  @Column({ length: 2048 })
-  descriptionImageUrl: string;
-
-  @ManyToOne(() => CalendarEventType, (type) => type.calendarEvents)
-  @JoinColumn({ name: 'calendarEventTypeId' })
-  calendarEventType: CalendarEventType;
-
-  @ManyToOne(() => CalendarEventLocation, (location) => location.calendarEvents)
-  @JoinColumn({ name: 'calendarEventLocationId' })
-  location: CalendarEventLocation;
-
-  @OneToMany(
-    () => CalendarEventSubscription,
-    (calendarEventSubscription) => calendarEventSubscription.calendarEvent,
-  )
-  calendarEventSubscriptions: CalendarEventSubscription[];
+  constructor(type: string) {
+    super(type);
+    this.title = '';
+    this.description = '';
+    this.longDescription = '';
+    this.numGoing = 0;
+    this.startTimestamp = Timestamp.now();
+    this.endTimestamp = Timestamp.now();
+  }
 }

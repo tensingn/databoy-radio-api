@@ -1,44 +1,23 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
-import { Size } from './size.entity';
-import { Image } from './image.entity';
+import { Timestamp } from '@google-cloud/firestore';
+import { DatabaseObject } from 'apps/api/src/services/database/models/database-object.entity';
 
-// don't need any serialization for this entity because
-// it doesn't contain any sensitive data
-
-@Entity()
-export class Product {
-  @PrimaryGeneratedColumn()
-  productId: number;
-
-  // used by snipcart
-  id: number;
-
-  @Column()
+export class Product extends DatabaseObject {
   name: string;
-
-  @Column()
   pluralName: string;
-
-  @Column()
   type: string;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
+  imageURLs: Array<string>;
+  releaseTimestamp: Timestamp;
+  sizes: Array<string>;
 
-  @OneToMany(() => Image, (image) => image.product)
-  images: Image[];
-
-  @Column()
-  releaseDate: Date;
-
-  @ManyToMany(() => Size, (size) => size.products)
-  @JoinTable()
-  sizes: Size[];
+  constructor() {
+    super();
+    this.name = '';
+    this.pluralName = '';
+    this.type = '';
+    this.price = 0;
+    this.imageURLs = [];
+    this.sizes = [];
+    this.releaseTimestamp = Timestamp.now();
+  }
 }

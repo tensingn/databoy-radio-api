@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { SubscribersService } from './subscribers.service';
 import { SubscribersController } from './subscribers.controller';
-import { Subscriber } from './entities/subscriber.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { FirestoreModule } from '../../services/database/firestore/firestore.module';
+import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Subscriber])],
+  imports: [FirestoreModule.forFeature(User)],
   controllers: [SubscribersController],
   providers: [SubscribersService],
 })

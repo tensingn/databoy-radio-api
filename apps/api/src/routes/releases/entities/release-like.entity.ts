@@ -1,23 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Subscriber } from '../../subscribers/entities/subscriber.entity';
-import { Release } from './release.entity';
+import { Like } from 'apps/api/src/services/likes/entities/like.entity';
 
-@Entity()
-export class ReleaseLike {
-  @PrimaryGeneratedColumn()
-  releaseLikeId: number;
+export class ReleaseLike extends Like {
+  releaseTitle: string;
 
-  @ManyToOne(() => Release, (Release) => Release.likes)
-  @JoinColumn({ name: 'releaseId' })
-  release: Release;
-
-  @ManyToOne(() => Subscriber, (subscriber) => subscriber.releaseLikes)
-  @JoinColumn({ name: 'subscriberId' })
-  subscriber: Subscriber;
+  constructor() {
+    super(ReleaseLike.name.toLocaleLowerCase());
+    this.releaseTitle = '';
+  }
 }

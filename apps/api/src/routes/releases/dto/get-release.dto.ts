@@ -1,9 +1,6 @@
-import { GetMixDto } from '../../mixes/dto/get-mix.dto';
+import { MusicDto } from 'apps/api/src/services/music/dto/music.dto';
+import { Track } from '../../tracks/entities/track.entity';
 
-export class GetReleaseDto {
-  releaseId: number;
-  title: string;
-  releaseDate: Date;
-  mixes?: GetMixDto[];
-  likes: number;
+export class GetReleaseDto extends MusicDto {
+  tracks: Array<Track>;
 }

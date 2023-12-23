@@ -1,32 +1,25 @@
 import { Module } from '@nestjs/common';
-import { CalendarEventsService } from './calendar-events.service';
+import { CalendarEventsService } from './services/calendar-events.service';
 import { CalendarEventsController } from './calendar-events.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CalendarEvent } from './entities/calendar-event.entity';
-import { DateService } from '../../services/date/date.service';
-import { CalendarEventType } from './entities/calendar-event-type.entity';
-import { CalendarEventLocation } from './entities/calendar-event-location.entity';
-import { CalendarEventMapperService } from './services/calendar-event-mapper.service';
-import { SubscribersService } from '../subscribers/subscribers.service';
-import { Subscriber } from '../subscribers/entities/subscriber.entity';
-import { CalendarEventSubscription } from './entities/calendar-event-subscription.entity';
+import { FirestoreModule } from '../../services/database/firestore/firestore.module';
+import { LiveEvent } from './entities/live-event.entity';
+import { ReleaseEvent } from './entities/release-event.entity';
+import { StreamEvent } from './entities/stream-event.entity';
+import { UsersModule } from '../users/users.module';
+import { CalendarEventGoingService } from './services/calendar-event-going.service';
+import { Going } from './entities/going.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      CalendarEvent,
-      CalendarEventType,
-      CalendarEventLocation,
-      Subscriber,
-      CalendarEventSubscription,
-    ]),
+    FirestoreModule.forFeatures(
+      [LiveEvent, ReleaseEvent, StreamEvent],
+      CalendarEvent.collectionName,
+    ),
+    FirestoreModule.forFeature(Going),
+    UsersModule,
   ],
   controllers: [CalendarEventsController],
-  providers: [
-    CalendarEventsService,
-    DateService,
-    CalendarEventMapperService,
-    SubscribersService,
-  ],
+  providers: [CalendarEventsService, CalendarEventGoingService],
 })
 export class CalendarEventsModule {}

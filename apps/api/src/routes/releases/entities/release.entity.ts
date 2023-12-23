@@ -1,21 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Mix } from '../../mixes/entities/mix.entity';
-import { ReleaseLike } from './release-like.entity';
+import { Track } from '../../tracks/entities/track.entity';
+import { Music } from 'apps/api/src/services/music/entities/music.entity';
 
-@Entity()
-export class Release {
-  @PrimaryGeneratedColumn()
-  releaseId: number;
-
-  @Column()
+export class Release extends Music {
   title: string;
+  tracks: Array<Track>;
 
-  @Column()
-  releaseDate: Date;
-
-  @OneToMany(() => Mix, (mix) => mix.release)
-  mixes: Mix[];
-
-  @OneToMany(() => ReleaseLike, (releaseLike) => releaseLike.release)
-  likes: ReleaseLike[];
+  constructor() {
+    super(Release.name.toLocaleLowerCase());
+    this.title = '';
+    this.tracks = new Array<Track>();
+  }
 }
